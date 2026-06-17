@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Herramientas — CNC 3018 PRO B2</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 16px; }
+    .tool-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius2); overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+      cursor: pointer;
+    }
+    .tool-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .tool-card.selected { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
+    .tool-header {
+      padding: 18px 20px 14px;
+      display: flex; gap: 14px; align-items: flex-start;
+    }
+    .tool-emoji {
+      width: 48px; height: 48px;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; flex-shrink: 0;
+    }
+    .tool-meta { flex: 1; }
+    .tool-name { font-size: 15px; font-weight: 700; color: var(--text); }
+    .tool-category { font-size: 11px; color: var(--text3); font-family: var(--font-display); margin-top: 2px; }
+    .tool-importance {
+      display: flex; gap: 3px; margin-top: 6px;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border2); }
+    .dot.fill { background: var(--accent); }
+    .tool-body {
+      padding: 0 20px 18px;
+      display: none;
+    }
+    .tool-card.open .tool-body { display: block; }
+    .tool-field { margin-bottom: 10px; }
+    .tool-field-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--text3); font-family: var(--font-display); margin-bottom: 4px; }
+    .tool-field-value { font-size: 13px; color: var(--text2); }
+    .tool-used-in { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+    .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+    .filter-btn {
+      padding: 5px 13px; border-radius: 20px;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      border: 1px solid var(--border); background: var(--bg2); color: var(--text2);
+      transition: all 0.15s;
+    }
+    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <div id="sidebar-mount"></div>
+  <main class="main">
+    <div class="topbar">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <div class="topbar-breadcrumb">
+        <a href="index.html">Dashboard</a>
+        <span class="crumb-sep">›</span>
+        <span class="crumb-current">Herramientas</span>
+      </div>
+    </div>
+    <div class="page-content">
+      <div class="page-header">
+        <div class="page-eyebrow">Catálogo de instrumentos</div>
+        <h1 class="page-title">Herramientas necesarias</h1>
+        <p class="page-subtitle">Conoce cada herramienta antes de comenzar. Haz clic en una tarjeta para ver descripción completa, función y en qué pruebas se usa.</p>
+      </div>
+
+      <div class="filter-bar" id="filterBar">
+        <button class="filter-btn active" data-cat="all">Todas</button>
+        <button class="filter-btn" data-cat="medición">Medición</button>
+        <button class="filter-btn" data-cat="soporte">Soporte</button>
+        <button class="filter-btn" data-cat="software">Software</button>
+        <button class="filter-btn" data-cat="mecánica">Mecánica</button>
+        <button class="filter-btn" data-cat="consumible">Consumibles</button>
+      </div>
+
+      <div class="tool-grid" id="toolGrid"><!-- JS --></div>
+    </div>
+  </main>
+</div>
+<script src="sidebar.js"></script>
+<script src="nav.js"></script>
+<script>
+const TOOLS = [
+  {
+    emoji:'📏', name:'Calibrador Vernier (Pie de rey)',
+    cat:'medición', importance:5,
+    desc:'Instrumento de medición manual que permite medir longitudes externas, internas y profundidades con una precisión típica de 0.02 mm.',
+    function:'Medir la distancia real recorrida por cada eje durante la calibración de pasos/mm. También verifica dimensiones de piezas de prueba.',
+    use:['Calibración pasos/mm','Verificación dimensional','Backlash'],
+    tip:'Siempre cierra la mordaza completamente antes de leer cero. Mide al menos 3 veces y promedia.',
+    video:'Video 1 — Desde 05:10. Herramienta principal para medir desplazamiento de ejes.'
+  },
+  {
+    emoji:'🔵', name:'Comparador de carátula (Dial indicator)',
+    cat:'medición', importance:5,
+    desc:'Instrumento de alta precisión que convierte desplazamientos lineales en rotación de aguja. Resolución típica: 0.01 mm.',
+    function:'Medir runout (descentramiento) del husillo, planitud de mesa, verificar repetibilidad y alineación de ejes.',
+    use:['Runout spindle','Planitud','Repetibilidad','Perpendicularidad'],
+    tip:'Montar siempre con la sonda PERPENDICULAR a la superficie. Poner a cero antes de medir. No exceder el rango de medición.',
+    video:'Video 4 (0:19-1:46) · Video 5 (0:31-7:01) · Video 6 (0:21-5:15)'
+  },
+  {
+    emoji:'🔴', name:'Indicador de prueba (Test indicator)',
+    cat:'medición', importance:4,
+    desc:'Variante del comparador de carátula con estilete articulado. Mayor sensibilidad, menor rango. Introduce error de coseno si no se usa correctamente.',
+    function:'Centrado de piezas, verificación de alineación en espacios reducidos donde el comparador de carátula no cabe.',
+    use:['Tramming spindle','Alineación ejes','Runout'],
+    tip:'Posicionar el estilete PARALELO a la superficie medida para eliminar el error de coseno. Ver Video 5 para comparación con indicador de carátula.',
+    video:'Video 5 (0:52-8:15) · Video 6 (5:16-16:38)'
+  },
+  {
+    emoji:'🧲', name:'Base magnética',
+    cat:'soporte', importance:5,
+    desc:'Soporte articulado con imán de activación on/off. Permite fijar comparadores en cualquier posición sobre superficies metálicas.',
+    function:'Sostener el comparador de carátula o indicador de prueba durante mediciones. Esencial para tener las manos libres.',
+    use:['Runout spindle','Planitud','Repetibilidad','Tramming'],
+    tip:'Aplicar carga inicial suficiente al comparador para evitar flexión del brazo. Ver Video 5 (5:07) sobre el efecto de flexión.',
+    video:'Video 4 (0:19-0:30) · Video 5 (5:07-7:01)'
+  },
+  {
+    emoji:'📐', name:'Escuadra de taller (6×8")',
+    cat:'medición', importance:4,
+    desc:'Escuadra metálica de precisión con dos caras a 90° exactos. Permite verificar perpendicularidad entre dos superficies.',
+    function:'Verificar que el spindle esté perpendicular a la mesa (tramming) y que los ejes estén escuadrados entre sí.',
+    use:['Tramming spindle','Escuadra X-Y','Escuadra X-Z','Escuadra Y-Z'],
+    tip:'Iluminar desde atrás con linterna para detectar luz entre la escuadra y la superficie. Si hay luz, hay error.',
+    video:'Video 3 (3:00-3:37) · Herramienta principal de verificación de tramming.'
+  },
+  {
+    emoji:'💡', name:'Linterna / linterna LED',
+    cat:'soporte', importance:3,
+    desc:'Fuente de luz puntual para detectar espacios (luz) entre la escuadra y las superficies.',
+    function:'Al colocarla detrás de la escuadra apoyada sobre el husillo, permite detectar visualmente si hay inclinación.',
+    use:['Tramming spindle','Perpendicularidad ejes'],
+    tip:'Usar en habitación con poca luz ambiente para detectar incluso pequeños haces de luz.',
+    video:'Video 3 (7:51-9:55) · Técnica de "light gap check".'
+  },
+  {
+    emoji:'⚖️', name:'Nivel de burbuja de precisión',
+    cat:'medición', importance:4,
+    desc:'Instrumento que detecta la horizontalidad de una superficie usando una burbuja en líquido. Precisión: 0.02-0.05 mm/m.',
+    function:'Verificar que la mesa y estructura de la CNC estén niveladas horizontalmente antes de cualquier calibración.',
+    use:['Nivelación general','Preparación mesa'],
+    tip:'Colocar en varias posiciones y orientaciones. La burbuja debe estar centrada en todas.',
+    video:'Video 2 (0:20-2:32) · Nivelación de mesa en Avid CNC — mismo principio aplicable.'
+  },
+  {
+    emoji:'🔑', name:'Juego de llaves Allen (hex)',
+    cat:'mecánica', importance:5,
+    desc:'Herramientas hexagonales para apriete y afloje de tornillos tipo Allen/grub. Tallas comunes: 1.5, 2, 2.5, 3, 4 mm.',
+    function:'Ajustar tornillos del carro Z, acoples de motor, guías lineales, soporte del spindle y todos los componentes estructurales.',
+    use:['Todas las fases de ensamblaje','Tramming','Ajuste de acoples'],
+    tip:'Nunca apretar en exceso. Usar par de apriete moderado. Verificar que ningún tornillo quede flojos tras calibración.',
+    video:'Video 3 (llave 2.5 mm para Longmill) — en 3018 PRO B2 las tallas más comunes son 2 y 2.5 mm.'
+  },
+  {
+    emoji:'💻', name:'Computador + Software UGS',
+    cat:'software', importance:5,
+    desc:'UGS (Universal Gcode Sender) es el software de control que se conecta a la placa GRBL de la CNC por USB.',
+    function:'Enviar comandos G-code, modificar parámetros $100/$101/$102, usar el asistente de calibración (wizard) y controlar el movimiento de ejes.',
+    use:['Calibración pasos/mm','Control de movimientos','Verificación GRBL'],
+    tip:'Descargar UGS Platform desde winder.github.io/ugs_platform. Conectar a 115200 baudios.',
+    video:'Video 1 — Software principal usado durante toda la calibración (02:04-22:03).'
+  },
+  {
+    emoji:'📦', name:'Bloques patrón (gauge blocks)',
+    cat:'medición', importance:3,
+    desc:'Bloques de acero de dimensiones exactas certificadas. Permiten establecer referencias dimensionales absolutas.',
+    function:'Verificación dimensional de alta precisión, calibración de comparadores, establecimiento de altura cero.',
+    use:['Verificación dimensional','Calibración herramientas'],
+    tip:'Si no se dispone de bloques patrón, usar una pieza mecanizada de referencia conocida.',
+    video:'Video 6 (0:21-5:15) · Haas Automation los usa con indicadores de carátula. ' +
+          '<span class="info-complementary">📚 Complementario</span>'
+  },
+  {
+    emoji:'📎', name:'Cinta de carrocero + marcador',
+    cat:'consumible', importance:4,
+    desc:'Material de bajo costo para marcar posiciones de referencia sobre la base de la CNC durante la calibración.',
+    function:'Marcar el punto de partida del eje antes de mover una distancia conocida. Permite medir el desplazamiento real con calibrador.',
+    use:['Calibración pasos/mm'],
+    tip:'Usar marcador fino para mayor precisión en la marca. Pegar bien la cinta para que no se mueva.',
+    video:'Video 1 (05:47) · Método de marcas en cinta de carrocero para medir desplazamiento.'
+  },
+  {
+    emoji:'🛢️', name:'Lubricante / aceite de máquina',
+    cat:'consumible', importance:5,
+    desc:'Lubricante específico para guías lineales y husillos de bolas. Ejemplos: aceite ISO VG32, grasa NLGI 2, WD-40 (solo limpieza).',
+    function:'Reducir fricción en ejes lineales, prevenir desgaste y corrosión, garantizar movimiento suave y preciso.',
+    use:['Fase 1 — Lubricación','Mantenimiento periódico'],
+    tip:'WD-40 es desengrasante, NO lubricante. Usar aceite de máquina o grasa apropiada después de limpiar.',
+    video:'<span class="info-complementary">📚 Complementario</span> — conocimiento técnico general de mantenimiento CNC.'
+  },
+];
+
+function renderTools(cat) {
+  const grid = document.getElementById('toolGrid');
+  const filtered = cat === 'all' ? TOOLS : TOOLS.filter(t => t.cat === cat);
+  grid.innerHTML = filtered.map((t,i) => {
+    const dots = Array.from({length:5}, (_,d) =>
+      `<div class="dot ${d < t.importance ? 'fill' : ''}"></div>`).join('');
+    const tags = t.use.map(u => `<span class="tag">${u}</span>`).join('');
+    return `
+    <div class="tool-card" onclick="toggleCard(this)">
+      <div class="tool-header">
+        <div class="tool-emoji">${t.emoji}</div>
+        <div class="tool-meta">
+          <div class="tool-name">${t.name}</div>
+          <div class="tool-category">${t.cat.toUpperCase()}</div>
+          <div class="tool-importance" title="Importancia">${dots}</div>
+        </div>
+      </div>
+      <div class="tool-body">
+        <div class="tool-field">
+          <div class="tool-field-label">¿Qué es?</div>
+          <div class="tool-field-value">${t.desc}</div>
+        </div>
+        <div class="tool-field">
+          <div class="tool-field-label">¿Para qué sirve en esta calibración?</div>
+          <div class="tool-field-value">${t.function}</div>
+        </div>
+        <div class="tool-field">
+          <div class="tool-field-label">💡 Consejo</div>
+          <div class="tool-field-value">${t.tip}</div>
+        </div>
+        <div class="tool-field">
+          <div class="tool-field-label">📹 Referencia en video</div>
+          <div class="tool-field-value">${t.video}</div>
+        </div>
+        <div class="tool-field">
+          <div class="tool-field-label">Se usa en</div>
+          <div class="tool-used-in">${tags}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCard(card) {
+  card.classList.toggle('open');
+}
+
+document.getElementById('filterBar').addEventListener('click', e => {
+  if (!e.target.matches('.filter-btn')) return;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+  renderTools(e.target.dataset.cat);
+});
+
+document.addEventListener('DOMContentLoaded', () => renderTools('all'));
+</script>
+</body>
+</html>

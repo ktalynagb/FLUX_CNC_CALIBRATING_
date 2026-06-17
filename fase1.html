@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fase 1 — Preparación Mecánica · CNC 3018 PRO B2</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div class="app-shell">
+  <div id="sidebar-mount"></div>
+  <main class="main">
+    <div class="topbar">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <div class="topbar-breadcrumb">
+        <a href="index.html">Dashboard</a>
+        <span class="crumb-sep">›</span>
+        <span class="crumb-current">Fase 1 — Preparación mecánica</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-secondary btn-sm" onclick="exportPDF()">🖨 Imprimir</button>
+        <a href="fase2.html" class="btn btn-primary btn-sm">Siguiente fase →</a>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <div class="page-header">
+        <div class="page-eyebrow">Fase 01 de 07 · Preparación mecánica</div>
+        <h1 class="page-title">Limpieza y lubricación de ejes</h1>
+        <p class="page-subtitle">Antes de cualquier calibración, la máquina debe estar limpia y lubricada. Este paso es obligatorio y determina la calidad de todo lo que sigue.</p>
+      </div>
+
+      <!-- PROGRESO DE FASE -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="flex items-center justify-between mb-8">
+          <h3 style="margin:0">Progreso de esta fase</h3>
+          <span id="phaseProgressLabel" class="text-sm text-muted">0 / 0 completados</span>
+        </div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="phaseProgressFill" style="width:0%"></div></div>
+      </div>
+
+      <div class="alert alert-warning">
+        <span class="alert-icon">⚠️</span>
+        <div class="alert-text"><strong>Seguridad primero:</strong> Apaga la CNC y desconéctala de la corriente antes de comenzar cualquier procedimiento de limpieza o lubricación. Nunca trabajes con la máquina energizada.</div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════ -->
+      <!-- SECCIÓN 1.1 — LIMPIEZA -->
+      <!-- ══════════════════════════════════════════════════ -->
+      <div class="section-divider">
+        <div class="section-divider-line"></div>
+        <div class="section-divider-label">1.1 — Limpieza de ejes</div>
+        <div class="section-divider-line"></div>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-header">
+          <span class="accordion-phase-num">1.1</span>
+          <div>
+            <div style="font-weight:700;color:var(--text)">Limpieza completa de ejes lineales</div>
+            <div class="text-xs text-muted mt-8">Eliminar residuos, polvo, virutas y grasa contaminada de guías y husillos</div>
+          </div>
+          <span class="badge badge-orange" style="margin-left:auto;margin-right:12px">Obligatorio</span>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+          <h4>¿Por qué es importante limpiar antes de calibrar?</h4>
+          <p>Las guías lineales de la CNC 3018 PRO B2 son ranuras o varillas por donde se deslizan los carros. Si tienen suciedad, la fricción cambia y los resultados de calibración serán incorrectos. Imagina intentar medir el peso de algo con una báscula sucia — el resultado no será confiable.</p>
+
+          <div class="alert alert-info mt-12">
+            <span class="alert-icon">💡</span>
+            <div class="alert-text"><strong>¿Qué es una guía lineal?</strong> Es la barra o riel metálico por donde se mueve cada eje. La CNC 3018 PRO B2 tiene guías en X, Y y Z. El husillo (tornillo largo que mueve el carro) también debe limpiarse.</div>
+          </div>
+
+          <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Procedimiento paso a paso</div><div class="section-divider-line"></div></div>
+
+          <ol class="step-list">
+            <li class="step-item"><span class="step-num">1</span><div class="step-content"><strong>Inspección visual inicial:</strong> Con buena iluminación, examina todas las guías lineales (ejes X, Y, Z) y los husillos. Busca: polvo acumulado, virutas metálicas, grasa oscurecida o endurecida, óxido superficial, partículas de material cortado (madera, acrílico, aluminio).</div></li>
+            <li class="step-item"><span class="step-num">2</span><div class="step-content"><strong>Limpieza en seco:</strong> Usa un cepillo suave o brocha para barrer residuos sueltos. Mueve el carro manualmente a lo largo de toda la guía para exponer todas las zonas.</div></li>
+            <li class="step-item"><span class="step-num">3</span><div class="step-content"><strong>Aplicar desengrasante:</strong> Usa WD-40 o alcohol isopropílico al 90%+ en un trapo limpio que no suelte pelusa. <em>Nunca apliques directamente sobre la máquina en spray.</em> Limpia las guías y el husillo en toda su longitud.</div></li>
+            <li class="step-item"><span class="step-num">4</span><div class="step-content"><strong>Secar completamente:</strong> Con un trapo seco y limpio, retira todo residuo de desengrasante. Las guías deben quedar secas antes de lubricar. El WD-40 y el alcohol isopropílico son desengrasantes, NO lubricantes finales.</div></li>
+            <li class="step-item"><span class="step-num">5</span><div class="step-content"><strong>Verificar los rodamientos lineales:</strong> Mueve cada carro manualmente. Debe deslizarse suavemente sin resistencia ni traqueteos. Si hay resistencia, hay suciedad o daño.</div></li>
+            <li class="step-item"><span class="step-num">6</span><div class="step-content"><strong>Inspeccionar tornillos de sujeción:</strong> Revisa que todos los tornillos de las guías, soportes y bases estén apretados. Anota si alguno está flojo.</div></li>
+          </ol>
+
+          <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Productos recomendados y prohibidos</div><div class="section-divider-line"></div></div>
+
+          <div class="card-grid card-grid-2">
+            <div class="card" style="border-color:var(--green)">
+              <h4 style="color:var(--green)">✅ Productos recomendados</h4>
+              <ul style="font-size:13px;color:var(--text2);padding-left:16px;line-height:2">
+                <li>WD-40 (solo para limpiar/desengrasar)</li>
+                <li>Alcohol isopropílico ≥90%</li>
+                <li>Trapo sin pelusa (microfibra)</li>
+                <li>Cepillo suave de cerdas finas</li>
+                <li>Aire comprimido (distancia > 15 cm)</li>
+              </ul>
+            </div>
+            <div class="card" style="border-color:var(--red)">
+              <h4 style="color:var(--red)">❌ Productos prohibidos</h4>
+              <ul style="font-size:13px;color:var(--text2);padding-left:16px;line-height:2">
+                <li>Agua (genera óxido)</li>
+                <li>Solventes agresivos (acetona en plásticos)</li>
+                <li>Limpiadores abrasivos</li>
+                <li>Estropajos metálicos</li>
+                <li>Trapos con suciedad previa</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="alert alert-source mt-12">
+            <span class="alert-icon">📚</span>
+            <div class="alert-text"><strong>Fuente:</strong> Conocimiento técnico complementario de mantenimiento CNC. <span class="info-complementary">📚 Complementario</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════ -->
+      <!-- SECCIÓN 1.2 — LUBRICACIÓN -->
+      <!-- ══════════════════════════════════════════════════ -->
+      <div class="accordion">
+        <div class="accordion-header">
+          <span class="accordion-phase-num">1.2</span>
+          <div>
+            <div style="font-weight:700;color:var(--text)">Lubricación de guías y husillos</div>
+            <div class="text-xs text-muted mt-8">Aplicar el lubricante correcto en la cantidad correcta</div>
+          </div>
+          <span class="badge badge-orange" style="margin-left:auto;margin-right:12px">Obligatorio</span>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+          <h4>¿Por qué lubricar?</h4>
+          <p>La lubricación reduce la fricción entre las piezas móviles, protege contra el desgaste y el óxido, y garantiza que el movimiento sea suave y predecible. Sin lubricación, los errores de posicionamiento aumentan con el tiempo.</p>
+
+          <div class="alert alert-warning mt-12">
+            <span class="alert-icon">⚠️</span>
+            <div class="alert-text"><strong>Error común:</strong> Aplicar WD-40 creyendo que es un lubricante. El WD-40 desplaza el agua y desengrasa, pero no lubrica a largo plazo. Úsalo solo para limpiar, luego aplica aceite o grasa real.</div>
+          </div>
+
+          <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Procedimiento</div><div class="section-divider-line"></div></div>
+          <ol class="step-list">
+            <li class="step-item"><span class="step-num">1</span><div class="step-content"><strong>Para guías lisas (varillas de acero):</strong> Aplica 2-3 gotas de aceite ISO VG32 o aceite de máquina liviano sobre cada varilla. Mueve el carro manualmente varias veces para distribuir.</div></li>
+            <li class="step-item"><span class="step-num">2</span><div class="step-content"><strong>Para husillos de bolas o trapezoidales:</strong> Aplica grasa NLGI 2 con un dedo o aplicador pequeño. Una capa delgada uniforme es suficiente — el exceso atrae polvo.</div></li>
+            <li class="step-item"><span class="step-num">3</span><div class="step-content"><strong>Distribución:</strong> Mueve cada eje manualmente en todo su recorrido 5-10 veces para distribuir el lubricante uniformemente.</div></li>
+            <li class="step-item"><span class="step-num">4</span><div class="step-content"><strong>Verificación:</strong> El movimiento debe ser suave y silencioso. Si hay ruido de raspado, falta lubricación o hay daño en las guías.</div></li>
+            <li class="step-item"><span class="step-num">5</span><div class="step-content"><strong>Exceso:</strong> Retira el exceso de lubricante con trapo. El lubricante sobrante atrae virutas y crea suciedad compactada.</div></li>
+          </ol>
+
+          <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Lubricantes adecuados</div><div class="section-divider-line"></div></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Componente</th><th>Lubricante recomendado</th><th>Cantidad</th><th>Frecuencia</th></tr></thead>
+              <tbody>
+                <tr><td>Guías lineales (varillas)</td><td>Aceite de máquina ISO VG32 / 3-en-1</td><td>2-3 gotas/varilla</td><td>Cada 8-10 horas de uso</td></tr>
+                <tr><td>Husillos trapezoidales</td><td>Grasa NLGI 2 (litio)</td><td>Capa fina uniforme</td><td>Cada 20 horas de uso</td></tr>
+                <tr><td>Rodamientos lineales</td><td>Grasa de rodamientos NLGI 2</td><td>Mínima cantidad</td><td>Cada 50 horas de uso</td></tr>
+                <tr><td>Acoples de motor</td><td>Sin lubricante (piezas de aluminio)</td><td>—</td><td>Solo verificar apriete</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="alert alert-source mt-12">
+            <span class="alert-icon">📚</span>
+            <div class="alert-text"><strong>Fuente:</strong> Conocimiento técnico complementario. <span class="info-complementary">📚 Complementario</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════ -->
+      <!-- CHECKLIST DE FASE 1 -->
+      <!-- ══════════════════════════════════════════════════ -->
+      <div class="section-divider">
+        <div class="section-divider-line"></div>
+        <div class="section-divider-label">Checklist de la fase</div>
+        <div class="section-divider-line"></div>
+      </div>
+
+      <div class="card">
+        <div class="flex items-center justify-between mb-12">
+          <h3 style="margin:0">✅ Checklist — Fase 1: Preparación mecánica</h3>
+          <span class="text-xs text-muted">Haz clic para marcar cada ítem</span>
+        </div>
+        <ul class="checklist">
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">🔌 Máquina apagada y desconectada de la corriente</div><div class="check-note">Nunca trabajar con la máquina energizada</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">🔍 Inspección visual completa de todos los ejes (X, Y, Z)</div><div class="check-note">Buscar residuos, polvo, grasa oscurecida, óxido</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">🧹 Limpieza en seco con cepillo suave</div><div class="check-note">Mover el carro para exponer todas las zonas</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">🧴 Aplicación de desengrasante (WD-40 o alcohol isopropílico)</div><div class="check-note">Nunca directamente en spray sobre la máquina</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">🪣 Secado completo antes de lubricar</div><div class="check-note">Esperar que el desengrasante se evapore completamente</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">🛢️ Lubricación de guías lineales (varillas eje X, Y, Z)</div><div class="check-note">2-3 gotas de aceite de máquina por varilla</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">🔩 Lubricación de husillos (tornillos de avance)</div><div class="check-note">Grasa NLGI 2, capa fina y uniforme</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">🔄 Movimiento manual de ejes en todo el recorrido (5-10 veces)</div><div class="check-note">Para distribuir el lubricante uniformemente</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">🔑 Verificación de apriete de todos los tornillos estructurales</div><div class="check-note">Bases, guías, soportes, acoples de motor</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">🔗 Revisión de acoples de motor (sin holgura, centrados)</div><div class="check-note">Los acoples flojos causan backlash severo</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">⚙️ Verificación de tuercas anti-backlash (si aplica)</div><div class="check-note">Deben tener tensión pero no excesiva fricción</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">✅ Movimiento suave y silencioso en todos los ejes confirmado</div><div class="check-note">Sin raspados, traqueteos ni resistencias irregulares</div></div></li>
+        </ul>
+      </div>
+
+      <!-- CRITERIOS -->
+      <div class="card mt-16">
+        <h3>Criterios de aceptación — Fase 1</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Criterio</th><th>Condición de aprobación</th><th>Falla si...</th></tr></thead>
+            <tbody>
+              <tr><td>Movimiento manual X</td><td>Suave, sin resistencia irregular</td><td>Hay raspado, traqueteo o zonas duras</td></tr>
+              <tr><td>Movimiento manual Y</td><td>Suave en todo el recorrido</td><td>Resistencia en algún punto del recorrido</td></tr>
+              <tr><td>Movimiento manual Z</td><td>Suave sin juego lateral</td><td>Juego lateral o movimiento irregular</td></tr>
+              <tr><td>Acoples de motor</td><td>Sin holgura al girar el husillo</td><td>Se percibe holgura entre motor y husillo</td></tr>
+              <tr><td>Tornillos estructurales</td><td>Todos apretados</td><td>Algún tornillo flojo o faltante</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- DIAGNÓSTICO -->
+      <div class="accordion mt-16">
+        <div class="accordion-header">
+          <span>🔍</span>
+          <div><div style="font-weight:700;color:var(--text)">Diagnóstico — Si algo falla en esta fase...</div></div>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Síntoma</th><th>Causa probable</th><th>Acción correctiva</th></tr></thead>
+              <tbody>
+                <tr><td>Carro con resistencia en un punto específico</td><td>Guía doblada o con rebaba metálica</td><td>Inspeccionar visualmente. Si hay doblez, reemplazar guía.</td></tr>
+                <tr><td>Ruido de raspado al mover</td><td>Suciedad incrustada o falta de lubricante</td><td>Limpiar de nuevo más a fondo, relubricar.</td></tr>
+                <tr><td>Juego lateral en eje Z</td><td>Rodamiento desgastado o flojo</td><td>Verificar y apretar tornillos del rodamiento. Si hay desgaste, reemplazar.</td></tr>
+                <tr><td>Acople flojo (se puede girar con la mano)</td><td>Tornillo de fijación del acople suelto</td><td>Alinear eje del motor con husillo y apretar con Allen.</td></tr>
+                <tr><td>Grasa negra y suciedad compactada</td><td>Lubricación sin limpiar previa</td><td>Limpiar completamente con desengrasante, secar, relubricar.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- NAVEGACIÓN -->
+      <div class="flex justify-between mt-24" style="flex-wrap:wrap;gap:10px">
+        <a href="index.html" class="btn btn-ghost">← Volver al Dashboard</a>
+        <a href="fase2.html" class="btn btn-primary">Continuar a Fase 2 →</a>
+      </div>
+
+    </div>
+  </main>
+</div>
+<script src="sidebar.js"></script>
+<script src="nav.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  initChecklists('fase1');
+  updatePhaseProgress();
+});
+</script>
+</body>
+</html>

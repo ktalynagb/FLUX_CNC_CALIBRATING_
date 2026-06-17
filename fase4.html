@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fase 4 — Verificación Geométrica · CNC 3018 PRO B2</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div class="app-shell">
+  <div id="sidebar-mount"></div>
+  <main class="main">
+    <div class="topbar">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <div class="topbar-breadcrumb">
+        <a href="index.html">Dashboard</a><span class="crumb-sep">›</span>
+        <span class="crumb-current">Fase 4 — Verificación geométrica</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-secondary btn-sm" onclick="exportPDF()">🖨 Imprimir</button>
+        <a href="fase5.html" class="btn btn-primary btn-sm">Siguiente fase →</a>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <div class="page-header">
+        <div class="page-eyebrow">Fase 04 de 07 · Verificación geométrica</div>
+        <h1 class="page-title">Nivelación y perpendicularidad de ejes</h1>
+        <p class="page-subtitle">Verificar que la máquina esté nivelada y que los ejes X, Y y Z sean perfectamente perpendiculares entre sí. Pruebas obligatorias.</p>
+      </div>
+
+      <div class="card" style="margin-bottom:20px">
+        <div class="flex items-center justify-between mb-8">
+          <h3 style="margin:0">Progreso de esta fase</h3>
+          <span id="phaseProgressLabel" class="text-sm text-muted">0 / 0 completados</span>
+        </div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="phaseProgressFill" style="width:0%"></div></div>
+      </div>
+
+      <!-- ══════════════════════ -->
+      <!-- 4.1 NIVELACIÓN GENERAL -->
+      <!-- ══════════════════════ -->
+      <div class="section-divider">
+        <div class="section-divider-line"></div>
+        <div class="section-divider-label">4.1 — Nivelación general de la CNC</div>
+        <div class="section-divider-line"></div>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-header">
+          <span class="accordion-phase-num">4.1</span>
+          <div><div style="font-weight:700;color:var(--text)">Nivelación horizontal de la máquina</div>
+          <div class="text-xs text-muted mt-8">La CNC debe estar horizontal en todas las direcciones antes de calibrar</div></div>
+          <span class="badge badge-orange" style="margin-left:auto;margin-right:12px">Obligatorio</span>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+          <h4>¿Por qué es crítica la nivelación?</h4>
+          <p>Si la máquina no está horizontal, la gravedad crea fuerzas asimétricas sobre los ejes. El eje Z especialmente se ve afectado: puede haber diferencias en la profundidad de corte de un lado al otro. En el Video 2, Avid CNC explica que la nivelación es el primer paso porque todo lo demás depende de ella.</p>
+
+          <div class="video-ref">
+            <div class="video-thumb">▶</div>
+            <div class="video-info"><div class="video-title">Video 2 — Avid CNC: Nivelación de mesa</div><div class="video-timestamp">0:20 → 2:32 · Nivel de precisión de 4 pies, ajuste de patas niveladoras usando la gravedad como referencia</div></div>
+            <a href="https://www.youtube.com/watch?v=2n8KcTBNS4U&t=20" target="_blank" class="btn btn-ghost btn-sm video-btn">▶ Ver</a>
+          </div>
+
+          <div class="alert alert-info mt-12">
+            <span class="alert-icon">💡</span>
+            <div class="alert-text"><strong>¿Qué es el nivel de burbuja?</strong> Es un instrumento con líquido y una burbuja de aire. Cuando la burbuja está exactamente en el centro, la superficie es horizontal. Si está desplazada, la superficie está inclinada en esa dirección.</div>
+          </div>
+
+          <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Herramientas</div><div class="section-divider-line"></div></div>
+          <div class="tag-list">
+            <span class="tag">⚖️ Nivel de burbuja de precisión</span>
+            <span class="tag">🔑 Llaves Allen (ajuste de patas)</span>
+            <span class="tag">📏 Calzas planas (si no hay patas niveladoras)</span>
+          </div>
+
+          <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Procedimiento</div><div class="section-divider-line"></div></div>
+          <ol class="step-list">
+            <li class="step-item"><span class="step-num">1</span><div class="step-content"><strong>Colocar el nivel en la cama de la CNC</strong> en dirección X (izquierda-derecha). Verificar la posición de la burbuja.</div></li>
+            <li class="step-item"><span class="step-num">2</span><div class="step-content">Si la burbuja no está centrada, ajustar las patas niveladoras de los lados correspondientes. En la CNC 3018 PRO B2, se usan cuñas o calzas planas si no tiene patas ajustables.</div></li>
+            <li class="step-item"><span class="step-num">3</span><div class="step-content"><strong>Rotar el nivel 90°</strong> para medir en dirección Y (adelante-atrás). Repetir el ajuste.</div></li>
+            <li class="step-item"><span class="step-num">4</span><div class="step-content"><strong>Verificar en diagonal</strong> (esquina a esquina). Si hay diferencia en diagonal, la superficie de apoyo tiene una torsión.</div></li>
+            <li class="step-item"><span class="step-num">5</span><div class="step-content">Repetir hasta que la burbuja esté centrada en todas las orientaciones.</div></li>
+            <li class="step-item"><span class="step-num">6</span><div class="step-content"><strong>Video 3 (3:45-5:45):</strong> También se puede detectar torsión en la mesa con el nivel e instalar cuñas en las patas hasta eliminarla.</div></li>
+          </ol>
+
+          <!-- Tabla nivelación -->
+          <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Registro de nivelación</div><div class="section-divider-line"></div></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Dirección</th><th>Estado burbuja (inicial)</th><th>Ajuste realizado</th><th>Estado burbuja (final)</th><th>¿Aprobado?</th></tr></thead>
+              <tbody>
+                <tr><td>Eje X (izq-der)</td><td><input class="table-input" type="text" placeholder="Centrada / Desplazada _mm"/></td><td><input class="table-input" type="text" placeholder="Calza izq/der..."/></td><td><input class="table-input" type="text" placeholder="Centrada / Desplazada _mm"/></td><td><input class="table-input" type="text" placeholder="Sí/No" style="max-width:60px"/></td></tr>
+                <tr><td>Eje Y (adelante-atrás)</td><td><input class="table-input" type="text" placeholder="Centrada / Desplazada _mm"/></td><td><input class="table-input" type="text" placeholder="Calza front/back..."/></td><td><input class="table-input" type="text" placeholder="Centrada / Desplazada _mm"/></td><td><input class="table-input" type="text" placeholder="Sí/No" style="max-width:60px"/></td></tr>
+                <tr><td>Diagonal A (↘)</td><td><input class="table-input" type="text" placeholder="Centrada / Desplazada _mm"/></td><td><input class="table-input" type="text" placeholder="Sin ajuste / Calza..."/></td><td><input class="table-input" type="text" placeholder="Centrada / Desplazada _mm"/></td><td><input class="table-input" type="text" placeholder="Sí/No" style="max-width:60px"/></td></tr>
+                <tr><td>Diagonal B (↙)</td><td><input class="table-input" type="text" placeholder="Centrada / Desplazada _mm"/></td><td><input class="table-input" type="text" placeholder="Sin ajuste / Calza..."/></td><td><input class="table-input" type="text" placeholder="Centrada / Desplazada _mm"/></td><td><input class="table-input" type="text" placeholder="Sí/No" style="max-width:60px"/></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card mt-12" style="border-color:var(--blue)">
+            <h4>Criterios de aceptación — Nivelación</h4>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Parámetro</th><th class="c-pass">🟢 Aprobado</th><th class="c-warn">🟡 Aceptable</th><th class="c-fail">🔴 Requiere ajuste</th></tr></thead>
+                <tbody>
+                  <tr><td>Desviación de nivelación X</td><td class="c-pass">Burbuja centrada</td><td class="c-warn">Desviación &lt; 1 div.</td><td class="c-fail">Desviación ≥ 1 div.</td></tr>
+                  <tr><td>Desviación de nivelación Y</td><td class="c-pass">Burbuja centrada</td><td class="c-warn">Desviación &lt; 1 div.</td><td class="c-fail">Desviación ≥ 1 div.</td></tr>
+                  <tr><td>Torsión diagonal</td><td class="c-pass">Sin diferencia visible</td><td class="c-warn">Diferencia mínima</td><td class="c-fail">Diferencia de burbuja en diagonales</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════ -->
+      <!-- 4.2 PERPENDICULARIDAD ENTRE EJES -->
+      <!-- ══════════════════════════════════ -->
+      <div class="section-divider">
+        <div class="section-divider-line"></div>
+        <div class="section-divider-label">4.2 — Perpendicularidad entre ejes</div>
+        <div class="section-divider-line"></div>
+      </div>
+
+      <div class="alert alert-info mb-12">
+        <span class="alert-icon">💡</span>
+        <div class="alert-text"><strong>¿Qué es perpendicularidad?</strong> Dos ejes son perpendiculares cuando forman exactamente 90°. Si X e Y no son perpendiculares, las piezas cortadas tendrán ángulos incorrectos — los rectángulos parecerán paralelogramos.</div>
+      </div>
+
+      <!-- 4.2a Eje X respecto a Y -->
+      <div class="accordion">
+        <div class="accordion-header">
+          <span class="accordion-phase-num">4.2a</span>
+          <div><div style="font-weight:700;color:var(--text)">Perpendicularidad X respecto a Y</div>
+          <div class="text-xs text-muted mt-8">Los ejes X e Y deben ser exactamente perpendiculares (90°)</div></div>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+          <h4>Método 1: Escuadra de taller</h4>
+          <ol class="step-list">
+            <li class="step-item"><span class="step-num">1</span><div class="step-content">Posicionar la escuadra de taller apoyada en la guía X, con el lado largo paralelo a la dirección Y.</div></li>
+            <li class="step-item"><span class="step-num">2</span><div class="step-content">Iluminar con linterna por detrás. Si hay espacio (luz), los ejes no son perpendiculares.</div></li>
+            <li class="step-item"><span class="step-num">3</span><div class="step-content">Medir el espacio en el extremo cercano y en el extremo lejano de la escuadra con una galga de espesores.</div></li>
+          </ol>
+
+          <h4 class="mt-16">Método 2: Corte de diagonales (recomendado)</h4>
+          <p>Según Video 2 (2:32-7:00), cortar 4 orificios en las esquinas de un rectángulo de 100×100 mm y medir las diagonales. Si son iguales, el eje es cuadrado.</p>
+          <ol class="step-list">
+            <li class="step-item"><span class="step-num">1</span><div class="step-content">Ejecutar el G-code de prueba para cortar 4 puntos en las esquinas de un cuadrado de 100×100 mm.</div></li>
+            <li class="step-item"><span class="step-num">2</span><div class="step-content">Medir con calibre la diagonal de punto 1 a punto 3, y la diagonal de punto 2 a punto 4.</div></li>
+            <li class="step-item"><span class="step-num">3</span><div class="step-content">Si las diagonales son iguales (diferencia ≤ 0.5 mm), el eje es perpendicular. Si son diferentes, el pórtico está torcido.</div></li>
+          </ol>
+
+          <div class="video-ref">
+            <div class="video-thumb">▶</div>
+            <div class="video-info"><div class="video-title">Video 2 — Escuadra del pórtico X-Y</div><div class="video-timestamp">2:32 → 7:00 · Método de corte de 4 orificios y medición de diagonales</div></div>
+            <a href="https://www.youtube.com/watch?v=2n8KcTBNS4U&t=152" target="_blank" class="btn btn-ghost btn-sm video-btn">▶ Ver</a>
+          </div>
+
+          <div class="table-wrap mt-12">
+            <table id="tablePerpXY">
+              <thead><tr><th>#</th><th>Diagonal A (mm)</th><th>Diagonal B (mm)</th><th>Diferencia (mm)</th><th>Estado</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td><input class="table-input" id="xyA1" type="number" step="0.01" placeholder="—"/></td><td><input class="table-input" id="xyB1" type="number" step="0.01" placeholder="—"/></td><td id="xyD1" class="table-calc">—</td><td id="xySt1">—</td></tr>
+                <tr><td>2</td><td><input class="table-input" id="xyA2" type="number" step="0.01" placeholder="—"/></td><td><input class="table-input" id="xyB2" type="number" step="0.01" placeholder="—"/></td><td id="xyD2" class="table-calc">—</td><td id="xySt2">—</td></tr>
+                <tr><td>3</td><td><input class="table-input" id="xyA3" type="number" step="0.01" placeholder="—"/></td><td><input class="table-input" id="xyB3" type="number" step="0.01" placeholder="—"/></td><td id="xyD3" class="table-calc">—</td><td id="xySt3">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4.2b Eje X respecto a Z -->
+      <div class="accordion">
+        <div class="accordion-header">
+          <span class="accordion-phase-num">4.2b</span>
+          <div><div style="font-weight:700;color:var(--text)">Perpendicularidad X respecto a Z</div>
+          <div class="text-xs text-muted mt-8">El eje Z debe ser vertical respecto al movimiento horizontal X</div></div>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+          <p>La perpendicularidad X-Z verifica que cuando el carro Z sube o baja, no se desplaza lateralmente en dirección X. Un error aquí significa que la profundidad de grabado cambia de izquierda a derecha.</p>
+
+          <ol class="step-list">
+            <li class="step-item"><span class="step-num">1</span><div class="step-content">Instalar el comparador de carátula con base magnética en la cama de la CNC, con la sonda tocando el carro del eje Z en su parte frontal.</div></li>
+            <li class="step-item"><span class="step-num">2</span><div class="step-content">Poner el comparador a cero. Mover el eje Z hacia arriba 50 mm. Leer la desviación.</div></li>
+            <li class="step-item"><span class="step-num">3</span><div class="step-content">Repetir con la sonda tocando el carro en su parte lateral. Mover el Z 50 mm y leer desviación.</div></li>
+            <li class="step-item"><span class="step-num">4</span><div class="step-content">Si la desviación supera el criterio, ajustar los tornillos de los rodamientos del carro Z.</div></li>
+          </ol>
+
+          <div class="table-wrap mt-12">
+            <table id="tablePerpXZ">
+              <thead><tr><th>#</th><th>Desplazamiento Z (mm)</th><th>Desviación en X (mm)</th><th>Error (mm)</th><th>Estado</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td data-col="target">50</td><td><input class="table-input" data-col="measured" data-row="xz1" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr><td>2</td><td data-col="target">50</td><td><input class="table-input" data-col="measured" data-row="xz2" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr><td>3</td><td data-col="target">50</td><td><input class="table-input" data-col="measured" data-row="xz3" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="stats-box" id="tablePerpXZ_summary">
+            <div class="stats-row">
+              <div class="stat-item"><div class="stat-label">Error prom.</div><div class="stat-value" style="font-size:16px" data-stat="avg">—</div></div>
+              <div class="stat-item"><div class="stat-label">Error máx.</div><div class="stat-value" style="font-size:16px" data-stat="max">—</div></div>
+              <div class="stat-item"><div class="stat-label">Veredicto</div><div class="stat-status" data-stat="verdict">—</div></div>
+            </div>
+          </div>
+          <div class="flex gap-8 mt-8">
+            <button class="btn btn-ghost btn-sm" onclick="exportCSV('tablePerpXZ','perp_x_z.csv')">⬇ CSV</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4.2c Eje Y respecto a Z -->
+      <div class="accordion">
+        <div class="accordion-header">
+          <span class="accordion-phase-num">4.2c</span>
+          <div><div style="font-weight:700;color:var(--text)">Perpendicularidad Y respecto a Z</div>
+          <div class="text-xs text-muted mt-8">El eje Z debe ser vertical respecto al movimiento en Y</div></div>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+          <p>Similar al anterior pero midiendo la desviación del eje Z en dirección Y. Un error aquí significa que la herramienta se inclina hacia adelante o atrás durante el movimiento vertical.</p>
+          <ol class="step-list">
+            <li class="step-item"><span class="step-num">1</span><div class="step-content">Reposicionar el comparador con la sonda tocando el carro Z en su parte lateral (dirección Y).</div></li>
+            <li class="step-item"><span class="step-num">2</span><div class="step-content">Poner a cero. Mover el eje Z 50 mm hacia arriba. Leer la desviación.</div></li>
+            <li class="step-item"><span class="step-num">3</span><div class="step-content">La desviación registrada es el error de perpendicularidad Y-Z por cada 50 mm de movimiento vertical.</div></li>
+          </ol>
+
+          <div class="table-wrap mt-12">
+            <table id="tablePerpYZ">
+              <thead><tr><th>#</th><th>Desplazamiento Z (mm)</th><th>Desviación en Y (mm)</th><th>Error (mm)</th><th>Estado</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td data-col="target">50</td><td><input class="table-input" data-col="measured" data-row="yz1" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr><td>2</td><td data-col="target">50</td><td><input class="table-input" data-col="measured" data-row="yz2" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr><td>3</td><td data-col="target">50</td><td><input class="table-input" data-col="measured" data-row="yz3" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="stats-box" id="tablePerpYZ_summary">
+            <div class="stats-row">
+              <div class="stat-item"><div class="stat-label">Error prom.</div><div class="stat-value" style="font-size:16px" data-stat="avg">—</div></div>
+              <div class="stat-item"><div class="stat-label">Error máx.</div><div class="stat-value" style="font-size:16px" data-stat="max">—</div></div>
+              <div class="stat-item"><div class="stat-label">Veredicto</div><div class="stat-status" data-stat="verdict">—</div></div>
+            </div>
+          </div>
+          <div class="flex gap-8 mt-8">
+            <button class="btn btn-ghost btn-sm" onclick="exportCSV('tablePerpYZ','perp_y_z.csv')">⬇ CSV</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CRITERIOS GEOMÉTRICOS -->
+      <div class="card mt-16" style="border-color:var(--blue)">
+        <h3>Criterios de aceptación — Verificación geométrica</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parámetro</th><th class="c-pass">🟢 Aprobado</th><th class="c-warn">🟡 Aceptable</th><th class="c-fail">🔴 Requiere ajuste</th></tr></thead>
+            <tbody>
+              <tr><td>Nivelación X e Y</td><td class="c-pass">Burbuja centrada</td><td class="c-warn">≤ 1 división burbuja</td><td class="c-fail">> 1 división burbuja</td></tr>
+              <tr><td>Perpendicularidad X-Y (diagonales)</td><td class="c-pass">Diferencia ≤ 0.3 mm</td><td class="c-warn">0.3 – 0.7 mm</td><td class="c-fail">> 0.7 mm</td></tr>
+              <tr><td>Perpendicularidad X-Z (por 50 mm)</td><td class="c-pass">≤ 0.05 mm</td><td class="c-warn">0.05 – 0.15 mm</td><td class="c-fail">> 0.15 mm</td></tr>
+              <tr><td>Perpendicularidad Y-Z (por 50 mm)</td><td class="c-pass">≤ 0.05 mm</td><td class="c-warn">0.05 – 0.15 mm</td><td class="c-fail">> 0.15 mm</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-xs text-muted mt-8"><span class="info-complementary">📚 Complementario</span> Valores sugeridos para CNC 3018 PRO B2 como referencia práctica de taller.</p>
+      </div>
+
+      <!-- DIAGNÓSTICO -->
+      <div class="accordion mt-16">
+        <div class="accordion-header">
+          <span>🔍</span>
+          <div><div style="font-weight:700;color:var(--text)">Diagnóstico — Si la geometría falla...</div></div>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Prueba falla</th><th>Causa probable</th><th>Corrección</th></tr></thead>
+              <tbody>
+                <tr><td>Nivelación X o Y</td><td>Superficie de trabajo no horizontal</td><td>Agregar calzas planas bajo las patas. En CNC 3018 PRO B2 sin patas ajustables, usar papel grueso o plástico delgado.</td></tr>
+                <tr><td>Perpendicularidad X-Y (diagonales)</td><td>Pórtico torcido respecto a la base Y</td><td>Ver Video 2 (2:32-7:00). Aflojar montaje del pórtico, corregir ángulo, reapretar con cuña si es necesario.</td></tr>
+                <tr><td>Perpendicularidad X-Z</td><td>Carro Z inclinado lateralmente</td><td>Ajustar rodamientos excéntricos del carro Z. Ver Video 3 (11:50-16:30).</td></tr>
+                <tr><td>Perpendicularidad Y-Z</td><td>Soporte del spindle inclinado front-back</td><td>Shimming (calzas) del soporte del spindle. Ver Video 2 (10:08-11:40).</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHECKLIST -->
+      <div class="card mt-16">
+        <h3>✅ Checklist — Fase 4</h3>
+        <ul class="checklist">
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Nivelación en dirección X — burbuja centrada</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Nivelación en dirección Y — burbuja centrada</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Nivelación diagonal — sin torsión</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Perpendicularidad X-Y medida y registrada</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Perpendicularidad X-Z medida y registrada</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Perpendicularidad Y-Z medida y registrada</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Todos los valores dentro del criterio de aceptación</div></div></li>
+        </ul>
+      </div>
+
+      <div class="flex justify-between mt-24" style="flex-wrap:wrap;gap:10px">
+        <a href="fase3.html" class="btn btn-ghost">← Fase 3</a>
+        <a href="fase5.html" class="btn btn-primary">Continuar a Fase 5 →</a>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="sidebar.js"></script>
+<script src="nav.js"></script>
+<script>
+function calcDiagRow(aId, bId, dId, stId) {
+  const a = parseFloat(document.getElementById(aId)?.value);
+  const b = parseFloat(document.getElementById(bId)?.value);
+  const dEl = document.getElementById(dId);
+  const stEl = document.getElementById(stId);
+  if (!isNaN(a) && !isNaN(b) && dEl && stEl) {
+    const diff = Math.abs(a - b);
+    dEl.textContent = diff.toFixed(3) + ' mm';
+    if (diff <= 0.3) stEl.innerHTML = '<span class="badge badge-green">🟢</span>';
+    else if (diff <= 0.7) stEl.innerHTML = '<span class="badge badge-yellow">🟡</span>';
+    else stEl.innerHTML = '<span class="badge badge-red">🔴</span>';
+  }
+}
+document.addEventListener('DOMContentLoaded', () => {
+  initChecklists('fase4');
+  updatePhaseProgress();
+  initDataTable('tablePerpXZ', { pass:0.05, warn:0.15, target:0 });
+  initDataTable('tablePerpYZ', { pass:0.05, warn:0.15, target:0 });
+
+  // Diagonal listeners X-Y
+  [[1],[2],[3]].forEach(([n]) => {
+    document.getElementById(`xyA${n}`)?.addEventListener('input', () => calcDiagRow(`xyA${n}`,`xyB${n}`,`xyD${n}`,`xySt${n}`));
+    document.getElementById(`xyB${n}`)?.addEventListener('input', () => calcDiagRow(`xyA${n}`,`xyB${n}`,`xyD${n}`,`xySt${n}`));
+  });
+});
+</script>
+</body>
+</html>

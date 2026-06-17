@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fase 2 — Calibración Subconjuntos · CNC 3018 PRO B2</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .axis-tab-bar { display:flex; gap:8px; margin-bottom:20px; }
+    .axis-tab { padding:8px 20px; border-radius:var(--radius); border:1px solid var(--border); background:var(--bg2); color:var(--text2); font-weight:600; font-size:13px; cursor:pointer; transition:all .15s; }
+    .axis-tab.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+    .axis-panel { display:none; }
+    .axis-panel.active { display:block; }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <div id="sidebar-mount"></div>
+  <main class="main">
+    <div class="topbar">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <div class="topbar-breadcrumb">
+        <a href="index.html">Dashboard</a><span class="crumb-sep">›</span>
+        <span class="crumb-current">Fase 2 — Calibración de subconjuntos</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-secondary btn-sm" onclick="exportPDF()">🖨 Imprimir</button>
+        <a href="fase3.html" class="btn btn-primary btn-sm">Siguiente fase →</a>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <div class="page-header">
+        <div class="page-eyebrow">Fase 02 de 07 · Calibración individual</div>
+        <h1 class="page-title">Calibración de subconjuntos</h1>
+        <p class="page-subtitle">Calibra los ejes Z e Y de manera independiente antes del ensamblaje final. Diferentes integrantes del equipo pueden trabajar en paralelo.</p>
+      </div>
+
+      <!-- PROGRESO -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="flex items-center justify-between mb-8">
+          <h3 style="margin:0">Progreso de esta fase</h3>
+          <span id="phaseProgressLabel" class="text-sm text-muted">0 / 0 completados</span>
+        </div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="phaseProgressFill" style="width:0%"></div></div>
+      </div>
+
+      <div class="alert alert-info">
+        <span class="alert-icon">💡</span>
+        <div class="alert-text"><strong>Trabajo en paralelo:</strong> El eje Z y el eje Y son subconjuntos independientes en la CNC 3018 PRO B2. Si hay dos personas disponibles, cada una puede calibrar un eje simultáneamente para ahorrar tiempo.</div>
+      </div>
+
+      <!-- TABS DE EJES -->
+      <div class="axis-tab-bar">
+        <button class="axis-tab active" onclick="switchAxis('z')">🔩 Eje Z</button>
+        <button class="axis-tab" onclick="switchAxis('y')">🔩 Eje Y</button>
+      </div>
+
+      <!-- ══════════ EJE Z ══════════ -->
+      <div id="panel-z" class="axis-panel active">
+        <div class="alert alert-source mb-12">
+          <span class="alert-icon">📹</span>
+          <div class="alert-text"><strong>Video 1 — Calibración eje Z:</strong> Minutos 17:26 a 22:03. Procedimiento de calibración vertical con calibre en posición vertical. Máquina de referencia: Sainsmart 3020 Pro Max — principios idénticos a CNC 3018 PRO B2.</div>
+        </div>
+
+        <!-- 2.1 Alineación mecánica Z -->
+        <div class="accordion">
+          <div class="accordion-header">
+            <span class="accordion-phase-num">2.1a</span>
+            <div><div style="font-weight:700;color:var(--text)">Alineación mecánica del eje Z</div>
+            <div class="text-xs text-muted mt-8">Verificar que el carro Z se mueva sin desviaciones laterales</div></div>
+            <span class="accordion-chevron">▼</span>
+          </div>
+          <div class="accordion-body">
+            <h4>¿Qué verificamos?</h4>
+            <p>El eje Z mueve la herramienta de corte hacia arriba y abajo. Si no está bien alineado, la profundidad de corte variará y los grabados serán desiguales.</p>
+            <ol class="step-list">
+              <li class="step-item"><span class="step-num">1</span><div class="step-content">Mover el carro Z manualmente de arriba a abajo. No debe haber juego lateral (movimiento de lado a lado).</div></li>
+              <li class="step-item"><span class="step-num">2</span><div class="step-content">Verificar que los rodamientos lineales del carro Z estén apretados uniformemente. En la CNC 3018 PRO B2 son excéntricos — se ajustan girando con llave Allen.</div></li>
+              <li class="step-item"><span class="step-num">3</span><div class="step-content">Verificar que el husillo Z esté recto. Si está doblado, la herramienta describirá una trayectoria no vertical.</div></li>
+              <li class="step-item"><span class="step-num">4</span><div class="step-content">Apoyar una escuadra de taller contra las guías del Z. Verificar con linterna que no haya espacio entre la escuadra y el carro.</div></li>
+            </ol>
+            <div class="alert alert-warning mt-12">
+              <span class="alert-icon">⚠️</span>
+              <div class="alert-text"><strong>Error común:</strong> Apretar los rodamientos excéntricos demasiado. Deben tener tensión suficiente para eliminar el juego pero sin impedir el movimiento suave.</div>
+            </div>
+            <div class="video-ref">
+              <div class="video-thumb">▶</div>
+              <div class="video-info"><div class="video-title">Video 3 — Tramming y ajuste eje Z</div><div class="video-timestamp">11:50 → 16:30 · Ajuste de rodamientos del carro Z</div></div>
+              <a href="https://www.youtube.com/watch?v=8T_ZasfpDsM&t=710" target="_blank" class="btn btn-ghost btn-sm video-btn">▶ Ver</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2.2 Verificación de desplazamiento Z -->
+        <div class="accordion">
+          <div class="accordion-header">
+            <span class="accordion-phase-num">2.1b</span>
+            <div><div style="font-weight:700;color:var(--text)">Verificación de desplazamiento eje Z</div>
+            <div class="text-xs text-muted mt-8">Confirmar que el Z se mueve la distancia correcta</div></div>
+            <span class="accordion-chevron">▼</span>
+          </div>
+          <div class="accordion-body">
+            <h4>Objetivo</h4>
+            <p>Verificar que el eje Z recorre la distancia real que se le pide. Esto es una pre-verificación antes de la calibración formal de pasos/mm en la Fase 6.</p>
+
+            <div class="alert alert-source mb-12">
+              <span class="alert-icon">📹</span>
+              <div class="alert-text"><strong>Video 1 — Eje Z (17:26-22:03):</strong> Se usa un calibre en posición vertical para medir el desplazamiento del eje Z. La influencia de la gravedad es importante: siempre mover el eje en la misma dirección para eliminar el backlash antes de medir.</div>
+            </div>
+
+            <ol class="step-list">
+              <li class="step-item"><span class="step-num">1</span><div class="step-content"><strong>Conectar la CNC al computador</strong> con UGS (Universal Gcode Sender). Verificar conexión a 115200 baudios.</div></li>
+              <li class="step-item"><span class="step-num">2</span><div class="step-content"><strong>Posicionar el calibre verticalmente</strong> bajo el carro del Z. La punta del husillo de la herramienta debe tocar la mordaza del calibre.</div></li>
+              <li class="step-item"><span class="step-num">3</span><div class="step-content"><strong>Eliminar backlash:</strong> Mover el eje Z hacia ABAJO 5-10 mm antes de empezar. Siempre medir en dirección descendente. <em>Ver Video 1 (08:14) — regla del backlash.</em></div></li>
+              <li class="step-item"><span class="step-num">4</span><div class="step-content">Registrar la posición inicial del calibre. Luego enviar el comando <code class="font-mono">G91 G0 Z-50</code> (mover 50 mm hacia abajo).</div></li>
+              <li class="step-item"><span class="step-num">5</span><div class="step-content">Medir la distancia real recorrida con el calibre. Registrar en la tabla.</div></li>
+            </ol>
+
+            <div class="video-ref">
+              <div class="video-thumb">▶</div>
+              <div class="video-info"><div class="video-title">Video 1 — Calibración eje Z</div><div class="video-timestamp">17:26 → 22:03 · Calibre vertical, eliminación de backlash por gravedad</div></div>
+              <a href="https://www.youtube.com/watch?v=nGwUf8uNWBU&t=1046" target="_blank" class="btn btn-ghost btn-sm video-btn">▶ Ver</a>
+            </div>
+
+            <!-- TABLA MEDICIÓN Z -->
+            <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Tabla de medición — Desplazamiento eje Z</div><div class="section-divider-line"></div></div>
+            <div class="table-wrap">
+              <table id="tableZ">
+                <thead>
+                  <tr><th>#</th><th>Distancia pedida (mm)</th><th>Distancia medida (mm)</th><th>Error (mm)</th><th>Estado</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>1</td><td data-col="target">50</td><td><input class="table-input" data-col="measured" data-row="z1" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>2</td><td data-col="target">50</td><td><input class="table-input" data-col="measured" data-row="z2" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>3</td><td data-col="target">50</td><td><input class="table-input" data-col="measured" data-row="z3" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>4</td><td data-col="target">100</td><td><input class="table-input" data-col="measured" data-row="z4" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>5</td><td data-col="target">100</td><td><input class="table-input" data-col="measured" data-row="z5" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="stats-box" id="tableZ_summary">
+              <div class="stats-row">
+                <div class="stat-item"><div class="stat-label">Error prom.</div><div class="stat-value" style="font-size:16px" data-stat="avg">—</div></div>
+                <div class="stat-item"><div class="stat-label">Error máx.</div><div class="stat-value" style="font-size:16px" data-stat="max">—</div></div>
+                <div class="stat-item"><div class="stat-label">Error mín.</div><div class="stat-value" style="font-size:16px" data-stat="min">—</div></div>
+                <div class="stat-item"><div class="stat-label">Desv. Est.</div><div class="stat-value" style="font-size:16px" data-stat="std">—</div></div>
+                <div class="stat-item"><div class="stat-label">Veredicto</div><div class="stat-status" data-stat="verdict">—</div></div>
+              </div>
+            </div>
+            <div class="flex gap-8 mt-8">
+              <button class="btn btn-ghost btn-sm" onclick="exportCSV('tableZ','medicion_eje_z.csv')">⬇ Exportar CSV</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2.3 Repetibilidad Z -->
+        <div class="accordion">
+          <div class="accordion-header">
+            <span class="accordion-phase-num">2.1c</span>
+            <div><div style="font-weight:700;color:var(--text)">Prueba de repetibilidad eje Z</div>
+            <div class="text-xs text-muted mt-8">¿La máquina vuelve siempre al mismo punto?</div></div>
+            <span class="accordion-chevron">▼</span>
+          </div>
+          <div class="accordion-body">
+            <h4>¿Qué es la repetibilidad?</h4>
+            <p>La repetibilidad es la capacidad de la máquina de regresar exactamente al mismo punto cuando se le ordena hacerlo múltiples veces. Es diferente a la precisión absoluta: una máquina puede ser repetible pero no precisa, o precisa pero no repetible.</p>
+
+            <div class="formula-box">
+              <div class="formula-label">Cálculo de repetibilidad</div>
+              R = Posición_max – Posición_min<br>
+              <span style="font-size:11px;color:var(--text2)">Donde R es el rango de variación de todas las mediciones al mismo punto objetivo</span>
+            </div>
+
+            <ol class="step-list">
+              <li class="step-item"><span class="step-num">1</span><div class="step-content">Posicionar el comparador de carátula con base magnética. La sonda debe tocar el carro del Z.</div></li>
+              <li class="step-item"><span class="step-num">2</span><div class="step-content">Mover el Z a una posición de referencia. Poner el comparador a cero.</div></li>
+              <li class="step-item"><span class="step-num">3</span><div class="step-content">Mover el Z 10 mm hacia abajo, luego regresar a la posición original. Registrar lectura del comparador.</div></li>
+              <li class="step-item"><span class="step-num">4</span><div class="step-content">Repetir 10 veces. La variación entre todas las lecturas es la repetibilidad.</div></li>
+            </ol>
+
+            <div class="table-wrap">
+              <table id="tableZRep">
+                <thead><tr><th>#</th><th>Posición obj. (mm)</th><th>Posición medida (mm)</th><th>Error (mm)</th><th>Estado</th></tr></thead>
+                <tbody>
+                  <!-- 10 rows -->
+                  <tr><td>1</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="zr1" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>2</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="zr2" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>3</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="zr3" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>4</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="zr4" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>5</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="zr5" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>6</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="zr6" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>7</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="zr7" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>8</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="zr8" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>9</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="zr9" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>10</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="zr10" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="stats-box" id="tableZRep_summary">
+              <div class="stats-row">
+                <div class="stat-item"><div class="stat-label">Error prom.</div><div class="stat-value" style="font-size:16px" data-stat="avg">—</div></div>
+                <div class="stat-item"><div class="stat-label">Error máx.</div><div class="stat-value" style="font-size:16px" data-stat="max">—</div></div>
+                <div class="stat-item"><div class="stat-label">Desv. Est.</div><div class="stat-value" style="font-size:16px" data-stat="std">—</div></div>
+                <div class="stat-item"><div class="stat-label">Veredicto</div><div class="stat-status" data-stat="verdict">—</div></div>
+              </div>
+            </div>
+            <div class="card mt-12" style="border-color:var(--blue)">
+              <h4>Criterios de aceptación — Repetibilidad eje Z</h4>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Parámetro</th><th class="c-pass">🟢 Aprobado</th><th class="c-warn">🟡 Aceptable</th><th class="c-fail">🔴 Requiere ajuste</th></tr></thead>
+                  <tbody>
+                    <tr><td>Error promedio</td><td class="c-pass">≤ 0.05 mm</td><td class="c-warn">0.05 – 0.15 mm</td><td class="c-fail">> 0.15 mm</td></tr>
+                    <tr><td>Desviación estándar</td><td class="c-pass">≤ 0.02 mm</td><td class="c-warn">0.02 – 0.05 mm</td><td class="c-fail">> 0.05 mm</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="flex gap-8 mt-8">
+              <button class="btn btn-ghost btn-sm" onclick="exportCSV('tableZRep','repetibilidad_eje_z.csv')">⬇ Exportar CSV</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CHECKLIST Z -->
+        <div class="card mt-16">
+          <h3>✅ Checklist — Eje Z</h3>
+          <ul class="checklist">
+            <li class="check-item"><div class="check-box"></div><div><div class="check-label">Alineación mecánica verificada (sin juego lateral)</div></div></li>
+            <li class="check-item"><div class="check-box"></div><div><div class="check-label">Rodamientos lineales ajustados correctamente</div></div></li>
+            <li class="check-item"><div class="check-box"></div><div><div class="check-label">Prueba de desplazamiento realizada (mín. 5 mediciones)</div></div></li>
+            <li class="check-item"><div class="check-box"></div><div><div class="check-label">Datos registrados en tabla de medición</div></div></li>
+            <li class="check-item"><div class="check-box"></div><div><div class="check-label">Prueba de repetibilidad realizada (mín. 10 mediciones)</div></div></li>
+            <li class="check-item"><div class="check-box"></div><div><div class="check-label">Error promedio dentro del criterio de aceptación</div></div></li>
+          </ul>
+        </div>
+      </div><!-- /panel-z -->
+
+      <!-- ══════════ EJE Y ══════════ -->
+      <div id="panel-y" class="axis-panel">
+        <div class="alert alert-source mb-12">
+          <span class="alert-icon">📹</span>
+          <div class="alert-text"><strong>Video 1 — Calibración eje Y:</strong> Minutos 15:00 a 17:26. El proceso es idéntico al eje X. Se usa cinta de carrocero, se mueve el eje y se mide con calibre.</div>
+        </div>
+
+        <!-- Alineación Y -->
+        <div class="accordion">
+          <div class="accordion-header">
+            <span class="accordion-phase-num">2.2a</span>
+            <div><div style="font-weight:700;color:var(--text)">Alineación mecánica del eje Y</div>
+            <div class="text-xs text-muted mt-8">Verificar que el eje Y se mueva en línea recta sin desviaciones</div></div>
+            <span class="accordion-chevron">▼</span>
+          </div>
+          <div class="accordion-body">
+            <h4>¿Qué verificamos?</h4>
+            <p>El eje Y mueve la base de trabajo (cama) hacia adelante y atrás. Si no está alineado, las piezas cortadas tendrán distorsiones en la dimensión Y.</p>
+            <ol class="step-list">
+              <li class="step-item"><span class="step-num">1</span><div class="step-content">Mover el carro Y manualmente de adelante hacia atrás en todo su recorrido. Debe ser suave y sin desviaciones laterales.</div></li>
+              <li class="step-item"><span class="step-num">2</span><div class="step-content">Verificar que las dos guías del eje Y sean paralelas entre sí. Medir la distancia entre ellas en tres puntos (inicio, medio, fin) — deben ser iguales.</div></li>
+              <li class="step-item"><span class="step-num">3</span><div class="step-content">Verificar apriete de todos los tornillos del soporte Y.</div></li>
+              <li class="step-item"><span class="step-num">4</span><div class="step-content">Verificar que el acople del motor Y esté bien fijado y centrado.</div></li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Desplazamiento Y -->
+        <div class="accordion">
+          <div class="accordion-header">
+            <span class="accordion-phase-num">2.2b</span>
+            <div><div style="font-weight:700;color:var(--text)">Verificación de desplazamiento eje Y</div>
+            <div class="text-xs text-muted mt-8">Medir distancia real vs. distancia pedida</div></div>
+            <span class="accordion-chevron">▼</span>
+          </div>
+          <div class="accordion-body">
+            <div class="alert alert-source mb-12">
+              <span class="alert-icon">📹</span>
+              <div class="alert-text"><strong>Video 1 (15:00-17:26):</strong> Mismo método que eje X. Marcar con cinta, mover distancia conocida, medir con calibre. Siempre eliminar backlash moviendo el eje antes de la medición inicial (ver 08:14).</div>
+            </div>
+
+            <ol class="step-list">
+              <li class="step-item"><span class="step-num">1</span><div class="step-content">Pegar cinta de carrocero en la base de la CNC, bajo un punto de referencia del carro Y.</div></li>
+              <li class="step-item"><span class="step-num">2</span><div class="step-content"><strong>Eliminar backlash:</strong> Mover el eje Y en la dirección a medir 5-10 mm antes de empezar.</div></li>
+              <li class="step-item"><span class="step-num">3</span><div class="step-content">Marcar la posición inicial en la cinta. Enviar comando <code class="font-mono">G91 G0 Y100</code> para mover 100 mm.</div></li>
+              <li class="step-item"><span class="step-num">4</span><div class="step-content">Medir con calibre la distancia real entre la marca inicial y la posición final. Registrar en tabla.</div></li>
+            </ol>
+
+            <div class="video-ref">
+              <div class="video-thumb">▶</div>
+              <div class="video-info"><div class="video-title">Video 1 — Calibración eje Y</div><div class="video-timestamp">15:00 → 17:26 · Método cinta de carrocero y calibre</div></div>
+              <a href="https://www.youtube.com/watch?v=nGwUf8uNWBU&t=900" target="_blank" class="btn btn-ghost btn-sm video-btn">▶ Ver</a>
+            </div>
+
+            <div class="table-wrap mt-12">
+              <table id="tableY">
+                <thead><tr><th>#</th><th>Distancia pedida (mm)</th><th>Distancia medida (mm)</th><th>Error (mm)</th><th>Estado</th></tr></thead>
+                <tbody>
+                  <tr><td>1</td><td data-col="target">100</td><td><input class="table-input" data-col="measured" data-row="y1" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>2</td><td data-col="target">100</td><td><input class="table-input" data-col="measured" data-row="y2" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>3</td><td data-col="target">100</td><td><input class="table-input" data-col="measured" data-row="y3" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>4</td><td data-col="target">50</td><td><input class="table-input" data-col="measured" data-row="y4" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>5</td><td data-col="target">50</td><td><input class="table-input" data-col="measured" data-row="y5" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="stats-box" id="tableY_summary">
+              <div class="stats-row">
+                <div class="stat-item"><div class="stat-label">Error prom.</div><div class="stat-value" style="font-size:16px" data-stat="avg">—</div></div>
+                <div class="stat-item"><div class="stat-label">Error máx.</div><div class="stat-value" style="font-size:16px" data-stat="max">—</div></div>
+                <div class="stat-item"><div class="stat-label">Desv. Est.</div><div class="stat-value" style="font-size:16px" data-stat="std">—</div></div>
+                <div class="stat-item"><div class="stat-label">Veredicto</div><div class="stat-status" data-stat="verdict">—</div></div>
+              </div>
+            </div>
+            <div class="flex gap-8 mt-8">
+              <button class="btn btn-ghost btn-sm" onclick="exportCSV('tableY','medicion_eje_y.csv')">⬇ Exportar CSV</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Repetibilidad Y -->
+        <div class="accordion">
+          <div class="accordion-header">
+            <span class="accordion-phase-num">2.2c</span>
+            <div><div style="font-weight:700;color:var(--text)">Prueba de repetibilidad eje Y</div></div>
+            <span class="accordion-chevron">▼</span>
+          </div>
+          <div class="accordion-body">
+            <p>Mismo procedimiento que el eje Z. Usar comparador de carátula con base magnética sobre el carro Y.</p>
+            <div class="table-wrap">
+              <table id="tableYRep">
+                <thead><tr><th>#</th><th>Posición obj. (mm)</th><th>Posición medida (mm)</th><th>Error (mm)</th><th>Estado</th></tr></thead>
+                <tbody>
+                  <tr><td>1</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="yr1" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>2</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="yr2" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>3</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="yr3" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>4</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="yr4" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>5</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="yr5" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>6</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="yr6" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>7</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="yr7" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>8</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="yr8" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>9</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="yr9" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                  <tr><td>10</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="yr10" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="stats-box" id="tableYRep_summary">
+              <div class="stats-row">
+                <div class="stat-item"><div class="stat-label">Error prom.</div><div class="stat-value" style="font-size:16px" data-stat="avg">—</div></div>
+                <div class="stat-item"><div class="stat-label">Error máx.</div><div class="stat-value" style="font-size:16px" data-stat="max">—</div></div>
+                <div class="stat-item"><div class="stat-label">Desv. Est.</div><div class="stat-value" style="font-size:16px" data-stat="std">—</div></div>
+                <div class="stat-item"><div class="stat-label">Veredicto</div><div class="stat-status" data-stat="verdict">—</div></div>
+              </div>
+            </div>
+            <div class="flex gap-8 mt-8">
+              <button class="btn btn-ghost btn-sm" onclick="exportCSV('tableYRep','repetibilidad_eje_y.csv')">⬇ Exportar CSV</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CHECKLIST Y -->
+        <div class="card mt-16">
+          <h3>✅ Checklist — Eje Y</h3>
+          <ul class="checklist">
+            <li class="check-item"><div class="check-box"></div><div><div class="check-label">Alineación mecánica verificada (guías paralelas)</div></div></li>
+            <li class="check-item"><div class="check-box"></div><div><div class="check-label">Acople del motor Y verificado</div></div></li>
+            <li class="check-item"><div class="check-box"></div><div><div class="check-label">Prueba de desplazamiento realizada (mín. 5 mediciones)</div></div></li>
+            <li class="check-item"><div class="check-box"></div><div><div class="check-label">Datos registrados en tabla de medición</div></div></li>
+            <li class="check-item"><div class="check-box"></div><div><div class="check-label">Prueba de repetibilidad realizada (10 mediciones)</div></div></li>
+            <li class="check-item"><div class="check-box"></div><div><div class="check-label">Error promedio dentro del criterio de aceptación</div></div></li>
+          </ul>
+        </div>
+      </div><!-- /panel-y -->
+
+      <!-- NAV -->
+      <div class="flex justify-between mt-24" style="flex-wrap:wrap;gap:10px">
+        <a href="fase1.html" class="btn btn-ghost">← Fase 1</a>
+        <a href="fase3.html" class="btn btn-primary">Continuar a Fase 3 →</a>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="sidebar.js"></script>
+<script src="nav.js"></script>
+<script>
+function switchAxis(axis) {
+  document.querySelectorAll('.axis-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.axis-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + axis).classList.add('active');
+  document.querySelector(`.axis-tab[onclick="switchAxis('${axis}')"]`).classList.add('active');
+}
+document.addEventListener('DOMContentLoaded', () => {
+  initChecklists('fase2');
+  updatePhaseProgress();
+  initDataTable('tableZ',    { pass:0.1, warn:0.3, target:50 });
+  initDataTable('tableZRep', { pass:0.05, warn:0.15, target:0 });
+  initDataTable('tableY',    { pass:0.1, warn:0.3, target:100 });
+  initDataTable('tableYRep', { pass:0.05, warn:0.15, target:0 });
+});
+</script>
+</body>
+</html>

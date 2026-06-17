@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CNC 3018 PRO B2 — Manual Interactivo de Calibración</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── Dashboard-specific styles ── */
+    .hero {
+      background: linear-gradient(135deg, var(--bg2) 0%, #1a0f00 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius3);
+      padding: 36px 40px;
+      margin-bottom: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '⚙';
+      position: absolute;
+      right: 32px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 100px;
+      opacity: 0.06;
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      font-family: var(--font-display);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .hero h1 { font-size: 32px; font-weight: 800; line-height: 1.15; }
+    .hero h1 span { color: var(--accent); }
+    .hero p { font-size: 14px; color: var(--text2); margin-top: 10px; max-width: 560px; }
+    .hero-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+
+    /* KPI row */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .kpi-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      padding: 18px 20px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .kpi-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.09em; font-family: var(--font-display); }
+    .kpi-value { font-size: 30px; font-weight: 800; font-family: var(--font-data); color: var(--text); }
+    .kpi-sub   { font-size: 11px; color: var(--text3); }
+
+    /* Flow diagram */
+    .flow-wrap { overflow-x: auto; padding-bottom: 8px; }
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      min-width: 700px;
+      margin: 16px 0;
+    }
+    .flow-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      flex: 1;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .flow-bubble {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: var(--bg3);
+      border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .flow-step:hover .flow-bubble { border-color: var(--accent); background: var(--accent-glow); }
+    .flow-bubble.done  { border-color: var(--green); background: var(--green-bg); }
+    .flow-bubble.active-step { border-color: var(--accent); background: var(--accent-glow); animation: pulse 2s infinite; }
+    .flow-bubble.locked { opacity: 0.35; }
+    .flow-label { font-size: 10px; color: var(--text2); margin-top: 7px; max-width: 70px; line-height: 1.3; font-weight: 600; }
+    .flow-label .flow-num { font-family: var(--font-display); color: var(--text3); display: block; font-size: 9px; margin-bottom: 2px; }
+    .flow-arrow {
+      color: var(--border2);
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-bottom: 22px;
+    }
+    .flow-arrow.done { color: var(--green); }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 0 0 var(--accent-glow); }
+      50%      { box-shadow: 0 0 0 8px transparent; }
+    }
+
+    /* Phase cards */
+    .phase-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      padding: 20px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      transition: border-color 0.15s;
+      text-decoration: none;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    .phase-card:hover { border-color: var(--accent); }
+    .phase-card.locked { opacity: 0.45; pointer-events: none; }
+    .phase-icon {
+      width: 42px; height: 42px;
+      background: var(--bg3);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+    }
+    .phase-body { flex: 1; }
+    .phase-num  { font-family: var(--font-display); font-size: 10px; color: var(--accent); letter-spacing: 0.1em; }
+    .phase-name { font-size: 14px; font-weight: 700; color: var(--text); margin: 2px 0 5px; }
+    .phase-desc { font-size: 12px; color: var(--text2); }
+    .phase-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .phase-progress-col { min-width: 120px; }
+    .phase-pct { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--text); text-align: right; }
+
+    @media (max-width: 900px) {
+      .kpi-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 520px) {
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .hero { padding: 24px 20px; }
+      .hero h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <div id="sidebar-mount"></div>
+
+  <main class="main">
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <div class="topbar-breadcrumb">
+        <span class="crumb-current">Dashboard general</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-secondary btn-sm" onclick="exportPDF()">🖨 Imprimir</button>
+        <button class="btn btn-ghost btn-sm" onclick="resetAll()">↺ Reiniciar progreso</button>
+      </div>
+    </div>
+
+    <div class="page-content">
+
+      <!-- HERO -->
+      <div class="hero">
+        <div class="hero-eyebrow">Manual Interactivo de Calibración</div>
+        <h1>CNC <span>3018 PRO B2</span><br>Protocolo completo</h1>
+        <p>Guía paso a paso para principiantes. Sigue las 7 fases en orden. Registra mediciones directamente. El sistema calcula y valida automáticamente.</p>
+        <div class="hero-actions">
+          <a href="fase1.html" class="btn btn-primary">▶ Comenzar calibración</a>
+          <a href="herramientas.html" class="btn btn-secondary">🔧 Ver herramientas</a>
+        </div>
+      </div>
+
+      <!-- KPI CARDS -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <span class="kpi-label">Fases totales</span>
+          <span class="kpi-value">7</span>
+          <span class="kpi-sub">Del protocolo oficial</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-label">Completadas</span>
+          <span class="kpi-value" id="kpiDone">0</span>
+          <span class="kpi-sub" id="kpiDoneLabel">0% del total</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-label">En progreso</span>
+          <span class="kpi-value" id="kpiInProgress">0</span>
+          <span class="kpi-sub">Fases iniciadas</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-label">Estado CNC</span>
+          <span class="kpi-value" id="kpiStatus" style="font-size:20px; margin-top:4px">⏳</span>
+          <span class="kpi-sub" id="kpiStatusLabel">Sin iniciar</span>
+        </div>
+      </div>
+
+      <!-- FLUJO DE TRABAJO -->
+      <div class="card">
+        <div class="flex items-center justify-between mb-12">
+          <h2 style="margin:0">Flujo de trabajo obligatorio</h2>
+          <span class="badge badge-orange">Las fases deben seguirse en orden</span>
+        </div>
+        <div class="alert alert-warning" style="margin-bottom:14px">
+          <span class="alert-icon">⚠️</span>
+          <span class="alert-text"><strong>Regla de dependencias:</strong> No inicies una fase si la anterior no ha sido completada. El sistema bloqueará las fases no disponibles.</span>
+        </div>
+        <div class="flow-wrap">
+          <div class="flow" id="flowDiagram">
+            <!-- generado por JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- PROGRESS GLOBAL -->
+      <div class="card">
+        <h2>Progreso general</h2>
+        <div style="margin-top:8px;">
+          <div class="flex items-center justify-between mb-8">
+            <span class="text-sm text-muted">Progreso total</span>
+            <span class="font-mono text-sm" id="globalPctLabel">0%</span>
+          </div>
+          <div class="progress-bar-wrap" style="height:10px">
+            <div class="progress-bar-fill" id="globalBar" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHASE LIST -->
+      <div class="section-divider">
+        <div class="section-divider-line"></div>
+        <div class="section-divider-label">Fases del protocolo</div>
+        <div class="section-divider-line"></div>
+      </div>
+
+      <div id="phaseList"><!-- generado por JS --></div>
+
+      <!-- IMPORTANTE -->
+      <div class="alert alert-source mt-16">
+        <span class="alert-icon">📹</span>
+        <div class="alert-text">
+          <strong>Fuentes de este manual:</strong> Video 1 (calibración pasos/mm · Sainsmart 3020), Video 2 (nivelación y escuadra · Avid CNC), Video 3 (tramming · Longmill), Videos 4-5-6 (uso de comparadores · Haas Automation). Los principios aplican directamente a la CNC 3018 PRO B2. Procedimientos sin video fuente están marcados con
+          <span class="info-complementary">📚 Complementario</span>
+        </div>
+      </div>
+
+    </div><!-- /page-content -->
+  </main>
+</div>
+
+<script src="sidebar.js"></script>
+<script src="nav.js"></script>
+<script>
+/* ── DATOS DE FASES ── */
+const PHASES = [
+  { id:'fase1', num:'01', icon:'🧹', name:'Preparación mecánica',        href:'fase1.html', desc:'Limpieza y lubricación de todos los ejes lineales. Punto de partida obligatorio.', tags:['Limpieza','Lubricación','Inspección'] },
+  { id:'fase2', num:'02', icon:'🔩', name:'Calibración de subconjuntos',  href:'fase2.html', desc:'Calibración individual de ejes Z e Y antes del ensamblaje. Permite trabajo en equipo paralelo.', tags:['Eje Z','Eje Y','Repetibilidad'] },
+  { id:'fase3', num:'03', icon:'🏗️', name:'Ensamblaje progresivo',         href:'fase3.html', desc:'Unión del eje Z con X, luego el conjunto X-Z con Y. Verificaciones posteriores a cada unión.', tags:['Montaje','Alineación','Verificación'] },
+  { id:'fase4', num:'04', icon:'📐', name:'Verificación geométrica',       href:'fase4.html', desc:'Nivelación general y perpendicularidad entre ejes X, Y y Z. Pruebas obligatorias.', tags:['Nivelación','Escuadra X-Y','X-Z','Y-Z'] },
+  { id:'fase5', num:'05', icon:'🌀', name:'Calibración del spindle',       href:'fase5.html', desc:'Tramming del husillo, verificación de runout y alineación del eje de corte.', tags:['Tramming','Runout','Perpendicularidad'] },
+  { id:'fase6', num:'06', icon:'📏', name:'Pasos por milímetro',           href:'fase6.html', desc:'Calibración de $100, $101 y $102 en GRBL. Con fórmulas, ejemplos y tablas.', tags:['GRBL','Steps/mm','UGS','Eje X Y Z'] },
+  { id:'fase7', num:'07', icon:'✅', name:'Validación final',              href:'fase7.html', desc:'Tabla de aprobación completa, diagnóstico y exportación de resultados.', tags:['Resumen','Exportar CSV','PDF'] },
+];
+
+/* ── FLOW DIAGRAM ── */
+function buildFlow() {
+  const container = document.getElementById('flowDiagram');
+  if (!container) return;
+  let html = '';
+  PHASES.forEach((p, i) => {
+    const pct = parseInt(localStorage.getItem('cnc_phase_' + p.id) || '0');
+    const cls = pct >= 100 ? 'done' : (pct > 0 ? 'active-step' : (i === 0 ? '' : 'locked'));
+    const arrCls = pct >= 100 ? 'done' : '';
+    html += `
+      <a class="flow-step" href="${p.href}">
+        <div class="flow-bubble ${cls}">${p.icon}</div>
+        <div class="flow-label"><span class="flow-num">FASE ${p.num}</span>${p.name}</div>
+      </a>`;
+    if (i < PHASES.length - 1) {
+      html += `<div class="flow-arrow ${arrCls}">→</div>`;
+    }
+  });
+  container.innerHTML = html;
+}
+
+/* ── PHASE LIST ── */
+function buildPhaseList() {
+  const container = document.getElementById('phaseList');
+  if (!container) return;
+  let html = '';
+  PHASES.forEach((p, i) => {
+    const pct = parseInt(localStorage.getItem('cnc_phase_' + p.id) || '0');
+    const isLocked = i > 0 && parseInt(localStorage.getItem('cnc_phase_' + PHASES[i-1].id) || '0') < 100 && pct === 0;
+    const badge = pct >= 100
+      ? '<span class="badge badge-green">✓ Completada</span>'
+      : pct > 0
+        ? `<span class="badge badge-orange">${pct}% En progreso</span>`
+        : isLocked
+          ? '<span class="badge badge-gray">🔒 Bloqueada</span>'
+          : '<span class="badge badge-gray">Pendiente</span>';
+    const tags = p.tags.map(t=>`<span class="tag">${t}</span>`).join('');
+    html += `
+      <a href="${isLocked ? '#' : p.href}" class="phase-card ${isLocked ? 'locked' : ''}">
+        <div class="phase-icon">${p.icon}</div>
+        <div class="phase-body">
+          <div class="phase-num">FASE ${p.num}</div>
+          <div class="phase-name">${p.name}</div>
+          <div class="phase-desc">${p.desc}</div>
+          <div class="phase-meta">
+            ${tags}
+          </div>
+        </div>
+        <div class="phase-progress-col">
+          <div class="phase-pct">${pct}%</div>
+          <div class="progress-bar-wrap mt-8"><div class="progress-bar-fill ${pct>=100?'green':''}" style="width:${pct}%"></div></div>
+          <div style="margin-top:8px">${badge}</div>
+        </div>
+      </a>`;
+  });
+  container.innerHTML = html;
+}
+
+/* ── KPI UPDATE ── */
+function updateKPIs() {
+  const pcts = PHASES.map(p => parseInt(localStorage.getItem('cnc_phase_' + p.id) || '0'));
+  const done = pcts.filter(p => p >= 100).length;
+  const inProg = pcts.filter(p => p > 0 && p < 100).length;
+  const avg = Math.round(pcts.reduce((a,b)=>a+b,0) / pcts.length);
+  document.getElementById('kpiDone').textContent = done;
+  document.getElementById('kpiDoneLabel').textContent = Math.round(done/PHASES.length*100) + '% del total';
+  document.getElementById('kpiInProgress').textContent = inProg;
+  document.getElementById('globalBar').style.width = avg + '%';
+  document.getElementById('globalPctLabel').textContent = avg + '%';
+  if (avg === 0) {
+    document.getElementById('kpiStatus').textContent = '⏳';
+    document.getElementById('kpiStatusLabel').textContent = 'Sin iniciar';
+  } else if (avg < 100) {
+    document.getElementById('kpiStatus').textContent = '🔄';
+    document.getElementById('kpiStatusLabel').textContent = 'En calibración';
+  } else {
+    document.getElementById('kpiStatus').textContent = '✅';
+    document.getElementById('kpiStatusLabel').textContent = '¡Calibración completa!';
+    document.getElementById('globalBar').classList.add('green');
+  }
+}
+
+function resetAll() {
+  if (!confirm('¿Reiniciar todo el progreso? Esta acción no se puede deshacer.')) return;
+  Object.keys(localStorage).filter(k => k.startsWith('cnc_')).forEach(k => localStorage.removeItem(k));
+  location.reload();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  buildFlow();
+  buildPhaseList();
+  updateKPIs();
+});
+</script>
+</body>
+</html>

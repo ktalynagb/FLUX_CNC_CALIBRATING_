@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fase 3 — Ensamblaje Progresivo · CNC 3018 PRO B2</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div class="app-shell">
+  <div id="sidebar-mount"></div>
+  <main class="main">
+    <div class="topbar">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <div class="topbar-breadcrumb">
+        <a href="index.html">Dashboard</a><span class="crumb-sep">›</span>
+        <span class="crumb-current">Fase 3 — Ensamblaje progresivo</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-secondary btn-sm" onclick="exportPDF()">🖨 Imprimir</button>
+        <a href="fase4.html" class="btn btn-primary btn-sm">Siguiente fase →</a>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <div class="page-header">
+        <div class="page-eyebrow">Fase 03 de 07 · Ensamblaje progresivo</div>
+        <h1 class="page-title">Unión progresiva de subconjuntos</h1>
+        <p class="page-subtitle">Ensamblar la máquina paso a paso, verificando la alineación después de cada unión. El orden importa: primero Z con X, luego X-Z con Y.</p>
+      </div>
+
+      <div class="card" style="margin-bottom:20px">
+        <div class="flex items-center justify-between mb-8">
+          <h3 style="margin:0">Progreso de esta fase</h3>
+          <span id="phaseProgressLabel" class="text-sm text-muted">0 / 0 completados</span>
+        </div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="phaseProgressFill" style="width:0%"></div></div>
+      </div>
+
+      <div class="alert alert-warning">
+        <span class="alert-icon">⚠️</span>
+        <div class="alert-text"><strong>Prerrequisito:</strong> La Fase 2 (calibración individual de subconjuntos) debe estar completada antes de iniciar el ensamblaje. No ensamblar subconjuntos que no hayan pasado sus pruebas.</div>
+      </div>
+
+      <!-- DIAGRAMA DE ENSAMBLAJE -->
+      <div class="card mt-16">
+        <h3>Secuencia de ensamblaje</h3>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 0;font-size:13px">
+          <div style="text-align:center;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 16px;min-width:80px">🔩<br><strong style="color:var(--text)">Eje Z</strong><br><span style="color:var(--text3);font-size:11px">calibrado</span></div>
+          <div style="color:var(--accent);font-size:20px;font-weight:bold">+</div>
+          <div style="text-align:center;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 16px;min-width:80px">📏<br><strong style="color:var(--text)">Eje X</strong><br><span style="color:var(--text3);font-size:11px">estructura</span></div>
+          <div style="color:var(--text3);font-size:18px">→</div>
+          <div style="text-align:center;background:var(--accent-glow);border:1px solid var(--accent);border-radius:8px;padding:12px 16px;min-width:80px">🏗️<br><strong style="color:var(--accent)">Z + X</strong><br><span style="color:var(--text3);font-size:11px">verificar</span></div>
+          <div style="color:var(--accent);font-size:20px;font-weight:bold">+</div>
+          <div style="text-align:center;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 16px;min-width:80px">🔩<br><strong style="color:var(--text)">Eje Y</strong><br><span style="color:var(--text3);font-size:11px">calibrado</span></div>
+          <div style="color:var(--text3);font-size:18px">→</div>
+          <div style="text-align:center;background:var(--green-bg);border:1px solid var(--green);border-radius:8px;padding:12px 16px;min-width:80px">✅<br><strong style="color:var(--green)">CNC lista</strong><br><span style="color:var(--text3);font-size:11px">para verificar</span></div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════ -->
+      <!-- 3.1 Unión Z + X -->
+      <!-- ══════════════════════════════════ -->
+      <div class="section-divider">
+        <div class="section-divider-line"></div>
+        <div class="section-divider-label">3.1 — Unión del eje Z con el eje X</div>
+        <div class="section-divider-line"></div>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-header">
+          <span class="accordion-phase-num">3.1</span>
+          <div><div style="font-weight:700;color:var(--text)">Procedimiento de montaje Z en X</div>
+          <div class="text-xs text-muted mt-8">El carro del eje Z se monta sobre las guías del eje X (pórtico)</div></div>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+          <h4>¿Qué es el pórtico (eje X)?</h4>
+          <p>El eje X es la estructura horizontal que soporta el carro del eje Z. El carro Z se desliza de izquierda a derecha sobre el pórtico X. Una correcta unión garantiza que el Z no tenga inclinación lateral.</p>
+
+          <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Herramientas necesarias</div><div class="section-divider-line"></div></div>
+          <div class="tag-list">
+            <span class="tag">🔑 Juego de llaves Allen</span>
+            <span class="tag">📐 Escuadra de taller</span>
+            <span class="tag">💡 Linterna</span>
+            <span class="tag">🔵 Comparador de carátula</span>
+            <span class="tag">🧲 Base magnética</span>
+          </div>
+
+          <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Procedimiento</div><div class="section-divider-line"></div></div>
+          <ol class="step-list">
+            <li class="step-item"><span class="step-num">1</span><div class="step-content"><strong>Preparación:</strong> Verificar que el carro Z tenga todos sus componentes ensamblados y calibrados (Fase 2). El soporte del spindle debe estar desmontado durante el ensamblaje.</div></li>
+            <li class="step-item"><span class="step-num">2</span><div class="step-content"><strong>Inserción de rodamientos en guías X:</strong> Deslizar los rodamientos lineales del carro Z sobre las guías del eje X suavemente. No forzar.</div></li>
+            <li class="step-item"><span class="step-num">3</span><div class="step-content"><strong>Apriete de tornillos:</strong> Apretar los tornillos de fijación de manera diagonal (cruz) y progresiva. Nunca apretar un tornillo al máximo antes que los otros.</div></li>
+            <li class="step-item"><span class="step-num">4</span><div class="step-content"><strong>Verificación de perpendicularidad Z-X:</strong> Colocar la escuadra de taller apoyada en la guía X y verificar contra el perfil del carro Z. Usar linterna para detectar espacios.</div></li>
+            <li class="step-item"><span class="step-num">5</span><div class="step-content"><strong>Ajuste:</strong> Si hay espacio visible, aflojar ligeramente los tornillos del carro, corregir la posición y reapretar.</div></li>
+            <li class="step-item"><span class="step-num">6</span><div class="step-content"><strong>Conectar el motor Z:</strong> Asegurar que el acople entre motor y husillo Z esté alineado y apretado. Girar el husillo manualmente para verificar que no haya excentricidad.</div></li>
+            <li class="step-item"><span class="step-num">7</span><div class="step-content"><strong>Prueba de movimiento X:</strong> Con el motor X conectado, enviar comando <code class="font-mono">G91 G0 X50 X-50</code>. El carro Z debe moverse suavemente sin oscilación.</div></li>
+          </ol>
+
+          <div class="alert alert-warning mt-12">
+            <span class="alert-icon">⚠️</span>
+            <div class="alert-text"><strong>Error común:</strong> Apretar los tornillos del carro Z con el eje en posición extrema. Siempre centrar el carro antes de apretar definitivamente para evitar tensiones asimétricas.</div>
+          </div>
+
+          <!-- Tabla verificación Z+X -->
+          <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Tabla de verificación — Unión Z+X</div><div class="section-divider-line"></div></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Verificación</th><th>Resultado</th><th>¿Cumple?</th><th>Observaciones</th></tr></thead>
+              <tbody>
+                <tr><td>Movimiento suave del carro Z sobre guías X</td><td><input class="table-input" type="text" placeholder="OK / No OK"/></td><td><input class="table-input" type="text" placeholder="Sí / No" style="max-width:70px"/></td><td><input class="table-input" type="text" placeholder="Notas..."/></td></tr>
+                <tr><td>Perpendicularidad Z respecto a X (escuadra)</td><td><input class="table-input" type="text" placeholder="OK / No OK"/></td><td><input class="table-input" type="text" placeholder="Sí / No" style="max-width:70px"/></td><td><input class="table-input" type="text" placeholder="Notas..."/></td></tr>
+                <tr><td>Acople motor Z sin excentricidad</td><td><input class="table-input" type="text" placeholder="OK / No OK"/></td><td><input class="table-input" type="text" placeholder="Sí / No" style="max-width:70px"/></td><td><input class="table-input" type="text" placeholder="Notas..."/></td></tr>
+                <tr><td>Tornillos de fijación apretados (todos)</td><td><input class="table-input" type="text" placeholder="OK / No OK"/></td><td><input class="table-input" type="text" placeholder="Sí / No" style="max-width:70px"/></td><td><input class="table-input" type="text" placeholder="Notas..."/></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="alert alert-source mt-12">
+            <span class="alert-icon">📹</span>
+            <div class="alert-text"><strong>Video 3 (11:50-16:30):</strong> Ajuste de rodamientos del carro Z en la Longmill — mismo principio de apriete progresivo aplicable a la 3018 PRO B2.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════ -->
+      <!-- 3.2 Unión X-Z + Y -->
+      <!-- ══════════════════════════════════ -->
+      <div class="section-divider">
+        <div class="section-divider-line"></div>
+        <div class="section-divider-label">3.2 — Unión del conjunto X-Z con el eje Y</div>
+        <div class="section-divider-line"></div>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-header">
+          <span class="accordion-phase-num">3.2</span>
+          <div><div style="font-weight:700;color:var(--text)">Montaje del pórtico X-Z sobre la base Y</div>
+          <div class="text-xs text-muted mt-8">El pórtico completo (X+Z) se instala sobre las guías del eje Y</div></div>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+          <h4>¿Qué es la base Y?</h4>
+          <p>El eje Y es la estructura base que mueve la mesa de trabajo (cama) hacia adelante y atrás. El pórtico X-Z se instala sobre los soportes laterales del eje Y.</p>
+
+          <ol class="step-list">
+            <li class="step-item"><span class="step-num">1</span><div class="step-content"><strong>Posicionar el pórtico X-Z:</strong> Colocar el conjunto sobre los soportes laterales del eje Y. Deben encajar en las ranuras o tornillos de fijación correspondientes.</div></li>
+            <li class="step-item"><span class="step-num">2</span><div class="step-content"><strong>Nivelación previa:</strong> Antes de apretar, verificar visualmente que el pórtico esté a la misma altura en ambos lados (izquierdo y derecho). Una diferencia visible de altura indica que el montaje es incorrecto.</div></li>
+            <li class="step-item"><span class="step-num">3</span><div class="step-content"><strong>Apriete simétrico:</strong> Apretar los tornillos de fijación del pórtico de manera alternada (izquierdo-derecho) y progresiva hasta alcanzar el par final.</div></li>
+            <li class="step-item"><span class="step-num">4</span><div class="step-content"><strong>Verificación de escuadra Y-Z:</strong> Colocar la escuadra entre la guía Y y el carro Z. Verificar perpendicularidad con linterna.</div></li>
+            <li class="step-item"><span class="step-num">5</span><div class="step-content"><strong>Conectar motor Y:</strong> Verificar acople motor-husillo Y. El husillo debe girar sin excentricidad visible.</div></li>
+            <li class="step-item"><span class="step-num">6</span><div class="step-content"><strong>Prueba de movimiento Y con carga:</strong> Enviar <code class="font-mono">G91 G0 Y100 Y-100</code>. El pórtico no debe oscilar lateralmente durante el movimiento.</div></li>
+            <li class="step-item"><span class="step-num">7</span><div class="step-content"><strong>Prueba combinada X-Y:</strong> Enviar movimientos diagonales <code class="font-mono">G91 G0 X50 Y50</code>. Verificar que no hay interferencias mecánicas ni sonidos anómalos.</div></li>
+          </ol>
+
+          <div class="alert alert-info mt-12">
+            <span class="alert-icon">💡</span>
+            <div class="alert-text"><strong>Verificación de diagonales (Video 2 — 2:32-7:00):</strong> Para verificar que el pórtico es perpendicular al eje Y, se puede cortar 4 orificios en las esquinas de un rectángulo y medir que las diagonales sean iguales. Una diferencia en diagonales indica que el pórtico está torcido.</div>
+          </div>
+
+          <div class="video-ref">
+            <div class="video-thumb">▶</div>
+            <div class="video-info"><div class="video-title">Video 2 — Avid CNC: Escuadra del pórtico</div><div class="video-timestamp">2:32 → 7:00 · Verificación de perpendicularidad del pórtico con corte de 4 orificios y medición de diagonales</div></div>
+            <a href="https://www.youtube.com/watch?v=2n8KcTBNS4U&t=152" target="_blank" class="btn btn-ghost btn-sm video-btn">▶ Ver</a>
+          </div>
+
+          <!-- Tabla verificación X-Z+Y -->
+          <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Tabla de verificación — Diagonal del pórtico</div><div class="section-divider-line"></div></div>
+          <div class="table-wrap">
+            <table id="tableDiag">
+              <thead><tr><th>Medición</th><th>Diagonal A (mm)</th><th>Diagonal B (mm)</th><th>Diferencia (mm)</th><th>Estado</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>Corte de prueba</td>
+                  <td><input class="table-input" id="diagA" type="number" step="0.01" placeholder="—"/></td>
+                  <td><input class="table-input" id="diagB" type="number" step="0.01" placeholder="—"/></td>
+                  <td id="diagDiff" class="table-calc">—</td>
+                  <td id="diagStatus">—</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-xs text-muted mt-8">Criterio: Diferencia entre diagonales ≤ 0.5 mm = Aprobado · 0.5-1 mm = Aceptable · > 1 mm = Requiere ajuste</p>
+
+          <div class="table-wrap mt-16">
+            <table>
+              <thead><tr><th>Verificación</th><th>Resultado</th><th>¿Cumple?</th><th>Observaciones</th></tr></thead>
+              <tbody>
+                <tr><td>Altura del pórtico igual en ambos lados</td><td><input class="table-input" type="text" placeholder="OK / No OK"/></td><td><input class="table-input" type="text" placeholder="Sí / No" style="max-width:70px"/></td><td><input class="table-input" type="text" placeholder="Notas..."/></td></tr>
+                <tr><td>Movimiento Y suave con pórtico montado</td><td><input class="table-input" type="text" placeholder="OK / No OK"/></td><td><input class="table-input" type="text" placeholder="Sí / No" style="max-width:70px"/></td><td><input class="table-input" type="text" placeholder="Notas..."/></td></tr>
+                <tr><td>Movimiento X suave sobre pórtico</td><td><input class="table-input" type="text" placeholder="OK / No OK"/></td><td><input class="table-input" type="text" placeholder="Sí / No" style="max-width:70px"/></td><td><input class="table-input" type="text" placeholder="Notas..."/></td></tr>
+                <tr><td>Diagonales iguales (diferencia ≤ 0.5 mm)</td><td><input class="table-input" type="text" placeholder="Diferencia =..."/></td><td><input class="table-input" type="text" placeholder="Sí / No" style="max-width:70px"/></td><td><input class="table-input" type="text" placeholder="Notas..."/></td></tr>
+                <tr><td>Sin ruidos anómalos en prueba combinada X-Y</td><td><input class="table-input" type="text" placeholder="OK / No OK"/></td><td><input class="table-input" type="text" placeholder="Sí / No" style="max-width:70px"/></td><td><input class="table-input" type="text" placeholder="Notas..."/></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- DIAGNÓSTICO -->
+      <div class="accordion mt-16">
+        <div class="accordion-header">
+          <span>🔍</span>
+          <div><div style="font-weight:700;color:var(--text)">Diagnóstico — Problemas comunes de ensamblaje</div></div>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Síntoma</th><th>Causa probable</th><th>Acción correctiva</th></tr></thead>
+              <tbody>
+                <tr><td>Carro X se mueve con resistencia en algunos puntos</td><td>Guías X no son paralelas o carro mal apretado</td><td>Aflojar tornillos del carro, centrar en el punto de resistencia, reapretar progresivamente</td></tr>
+                <tr><td>Pórtico oscila durante movimiento Y</td><td>Un lado del pórtico más alto que el otro</td><td>Aflojar fijación del pórtico, nivelar ambos lados, reapretar</td></tr>
+                <tr><td>Diagonales del corte son diferentes</td><td>Pórtico no perpendicular al eje Y</td><td>Corregir escuadra del pórtico según método del Video 2 (2:32-7:00)</td></tr>
+                <tr><td>Ruido de traqueteo en movimiento X o Y</td><td>Tornillo de sujeción del acople flojo</td><td>Localizar el acople (motor-husillo) que traquetea y apretar tornillo Allen</td></tr>
+                <tr><td>El Z toca los límites mecánicos antes de lo esperado</td><td>Montaje del carro Z en posición incorrecta sobre las guías X</td><td>Remontar el carro en posición centrada en la guía X</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHECKLIST FASE 3 -->
+      <div class="section-divider mt-24">
+        <div class="section-divider-line"></div>
+        <div class="section-divider-label">Checklist completo — Fase 3</div>
+        <div class="section-divider-line"></div>
+      </div>
+      <div class="card">
+        <h3>✅ Checklist — Ensamblaje progresivo</h3>
+        <ul class="checklist">
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Subconjunto eje Z verificado y aprobado (Fase 2)</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Subconjunto eje Y verificado y aprobado (Fase 2)</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Carro Z montado sobre guías X con apriete progresivo</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Perpendicularidad Z-X verificada con escuadra y linterna</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Motor Z conectado y acople verificado</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Pórtico X-Z montado sobre soportes Y a igual altura</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Pórtico perpendicular al eje Y (diagonales ≤ 0.5 mm de diferencia)</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Motor Y conectado y acople verificado</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Prueba de movimiento X realizada — sin interferencias</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Prueba de movimiento Y realizada — sin interferencias</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Prueba combinada X-Y realizada — sin ruidos ni oscilaciones</div></div></li>
+        </ul>
+      </div>
+
+      <!-- NAV -->
+      <div class="flex justify-between mt-24" style="flex-wrap:wrap;gap:10px">
+        <a href="fase2.html" class="btn btn-ghost">← Fase 2</a>
+        <a href="fase4.html" class="btn btn-primary">Continuar a Fase 4 →</a>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="sidebar.js"></script>
+<script src="nav.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  initChecklists('fase3');
+  updatePhaseProgress();
+
+  // Cálculo automático de diagonales
+  function calcDiag() {
+    const a = parseFloat(document.getElementById('diagA').value);
+    const b = parseFloat(document.getElementById('diagB').value);
+    if (!isNaN(a) && !isNaN(b)) {
+      const diff = Math.abs(a - b);
+      document.getElementById('diagDiff').textContent = diff.toFixed(3) + ' mm';
+      const st = document.getElementById('diagStatus');
+      if (diff <= 0.5) st.innerHTML = '<span class="badge badge-green">🟢 APROBADO</span>';
+      else if (diff <= 1.0) st.innerHTML = '<span class="badge badge-yellow">🟡 ACEPTABLE</span>';
+      else st.innerHTML = '<span class="badge badge-red">🔴 REQUIERE AJUSTE</span>';
+    }
+  }
+  document.getElementById('diagA').addEventListener('input', calcDiag);
+  document.getElementById('diagB').addEventListener('input', calcDiag);
+});
+</script>
+</body>
+</html>
