@@ -4,42 +4,47 @@
    ============================================================ */
 
 /* ─── TOKENS ─────────────────────────────────────────────── */
+/* ─── TOKENS — Flux Solutions Cali ─────────────────────── */
 :root {
-  --bg:          #0d1117;
-  --bg2:         #161b22;
-  --bg3:         #21262d;
-  --border:      #30363d;
-  --border2:     #484f58;
+  --bg:          #0a0f1a;   /* fondo principal — azul muy oscuro */
+  --bg2:         #0f1828;   /* fondo sidebar y cards */
+  --bg3:         #162035;   /* fondo hover, tablas, inputs */
+  --border:      #1e3050;
+  --border2:     #2a4570;
 
-  --text:        #e6edf3;
-  --text2:       #8b949e;
-  --text3:       #6e7681;
+  --text:        #e8eef5;
+  --text2:       #8fa3c0;
+  --text3:       #4a6080;
 
-  --accent:      #f97316;       /* naranja herramienta */
-  --accent2:     #fb923c;
-  --accent-glow: rgba(249,115,22,0.18);
+  /* ── ACENTO PRINCIPAL: Teal del logo ── */
+  --accent:      #00c9a7;        /* teal/verde del triángulo */
+  --accent2:     #00e8c2;        /* hover más brillante */
+  --accent-glow: rgba(0,201,167,0.15);
 
-  --green:       #22c55e;
-  --green-bg:    rgba(34,197,94,0.12);
-  --yellow:      #eab308;
-  --yellow-bg:   rgba(234,179,8,0.12);
+  /* ── ACENTO SECUNDARIO: Azul del logo ── */
+  --accent-blue:      #2d6be4;   /* azul del rectángulo */
+  --accent-blue-dim:  rgba(45,107,228,0.15);
+
+  /* ── SEMÁFOROS ── */
+  --green:       #00c9a7;        /* aprobado = mismo teal del logo */
+  --green-bg:    rgba(0,201,167,0.12);
+  --yellow:      #f59e0b;
+  --yellow-bg:   rgba(245,158,11,0.12);
   --red:         #ef4444;
   --red-bg:      rgba(239,68,68,0.12);
-  --blue:        #3b82f6;
-  --blue-bg:     rgba(59,130,246,0.12);
+  --blue:        #2d6be4;        /* azul del logo para info */
+  --blue-bg:     rgba(45,107,228,0.12);
 
+  /* resto de tokens sin cambio */
   --radius:      8px;
   --radius2:     12px;
   --radius3:     16px;
-
   --font-display: 'JetBrains Mono', 'Courier New', monospace;
   --font-body:    'Inter', 'Segoe UI', system-ui, sans-serif;
   --font-data:    'JetBrains Mono', monospace;
-
   --nav-w:       260px;
   --header-h:    60px;
 }
-
 /* ─── RESET ───────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; scroll-behavior: smooth; }
