@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fase 6 — Pasos por Milímetro · CNC 3018 PRO B2</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    /* ── Calculadora ── */
+    .calc-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:12px 0; }
+    .calc-field label { display:block; font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:.07em; margin-bottom:5px; font-family:var(--font-display); }
+    .calc-field input { width:100%; background:var(--bg3); border:1px solid var(--border); color:var(--text); border-radius:var(--radius); padding:8px 12px; font-family:var(--font-data); font-size:14px; }
+    .calc-field input:focus { outline:none; border-color:var(--accent); }
+    .calc-result { background:var(--bg3); border:1px solid var(--accent); border-radius:var(--radius); padding:14px 18px; text-align:center; margin-top:12px; }
+    .calc-result-label { font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px; font-family:var(--font-display); }
+    .calc-result-value { font-family:var(--font-data); font-size:24px; font-weight:800; color:var(--accent); }
+    .calc-result-sub { font-size:12px; color:var(--text2); margin-top:4px; }
+    /* ── Tabla de eje ── */
+    .summary-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; margin-top:6px; }
+    /* ── Param table ── */
+    .param-tag { font-family:var(--font-data); color:var(--accent); font-weight:700; font-size:14px; }
+    /* ── Example block ── */
+    .example-block { background:rgba(0,201,167,.06); border:1px solid rgba(0,201,167,.25); border-radius:var(--radius); padding:14px 18px; margin:12px 0; font-size:13px; }
+    .example-block .ex-title { color:var(--accent); font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.08em; margin-bottom:10px; }
+    .ex-line { display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px solid rgba(0,201,167,.1); }
+    .ex-line:last-child { border:none; font-weight:700; color:var(--accent); }
+    .ex-key { color:var(--text2); }
+    .ex-val { font-family:var(--font-data); }
+    /* ── Diag grid ── */
+    .diag-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0; }
+    .diag-item { background:var(--bg3); border-radius:var(--radius); padding:12px 14px; border-left:3px solid var(--red); font-size:13px; }
+    .diag-title { font-weight:700; color:var(--text); margin-bottom:4px; font-size:12px; }
+    .diag-fix { color:var(--text2); }
+    @media(max-width:700px){ .calc-grid{grid-template-columns:1fr;} .summary-grid{grid-template-columns:1fr 1fr;} .diag-grid{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <div id="sidebar-mount"></div>
+
+  <main class="main">
+    <!-- ═══════════════════ TOPBAR ═══════════════════════════ -->
+    <div class="topbar">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <div class="topbar-breadcrumb">
+        <a href="index.html">Dashboard</a>
+        <span class="crumb-sep">›</span>
+        <span class="crumb-current">Fase 6 — Pasos por milímetro</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-secondary btn-sm" onclick="exportPDF()">🖨 Imprimir</button>
+        <a href="fase7.html" class="btn btn-primary btn-sm">Fase 7: Validación →</a>
+      </div>
+    </div>
+
+    <div class="page-content">
+
+      <!-- ═══════ ENCABEZADO ═══════ -->
+      <div class="page-header">
+        <div class="page-eyebrow">Fase 06 de 07 · Calibración de pasos por milímetro</div>
+        <h1 class="page-title">📏 Calibración de Pasos por Milímetro</h1>
+        <p class="page-subtitle">
+          Configura la resolución real de cada eje en el firmware GRBL ($100, $101, $102).
+          Sin esta calibración, todos los cortes tendrán error de escala y los círculos saldrán ovalados.
+        </p>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="badge badge-blue">📹 Fuente principal: Video 1</span>
+          <span class="badge badge-orange">⚠️ Requiere Fase 5 completada</span>
+        </div>
+      </div>
+
+      <!-- ═══════ BARRA DE PROGRESO ═══════ -->
+      <div style="margin-bottom:24px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text3);margin-bottom:4px;">
+          <span style="font-family:var(--font-display);text-transform:uppercase;letter-spacing:.06em;">Progreso de esta fase</span>
+          <span id="phaseProgressLabel">0 / 0 completados</span>
+        </div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="phaseProgressFill" style="width:0%"></div></div>
+      </div>
+
+      <!-- ═══════ VIDEO REF PRINCIPAL ═══════ -->
+      <div class="video-ref" style="margin-bottom:24px;">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">Video 1 — Calibración de pasos/mm en CNC y Láser (Sainsmart 3020 Pro Max)</div>
+          <div class="video-timestamp">Principios idénticos para CNC 3018 PRO B2 · Software: UGS (Universal Gcode Sender)</div>
+        </div>
+        <div class="video-btn">
+          <a href="https://www.youtube.com/watch?v=nGwUf8uNWBU" target="_blank" class="btn btn-secondary btn-sm">▶ Ver video</a>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- 6.0  QUÉ SON LOS PASOS POR MM                         -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="accordion" id="acc60">
+        <div class="accordion-header open">
+          <span class="accordion-phase-num">6.0</span>
+          <span>¿Qué son los pasos/mm y por qué importan?</span>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body open">
+          <p style="font-size:13px;color:var(--text2);margin-bottom:14px;">
+            Los motores de la CNC son <strong>motores paso a paso</strong>: avanzan en saltos discretos.
+            El firmware GRBL necesita saber cuántos pasos = 1 mm real en cada eje.
+            Si el valor es incorrecto, la máquina se mueve más o menos de lo pedido.
+          </p>
+          <div class="alert alert-info" style="margin-bottom:14px;">
+            <span class="alert-icon">ℹ️</span>
+            <div class="alert-text">Ver <strong>Video 1 — minuto 02:53 a 03:06</strong> para la explicación completa de $100, $101, $102.
+            <a href="https://www.youtube.com/watch?v=nGwUf8uNWBU&t=173" target="_blank" class="btn btn-secondary btn-sm" style="margin-left:8px;">▶ Ir al minuto</a></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Parámetro GRBL</th><th>Eje</th><th>Descripción</th><th>Efecto si es incorrecto</th></tr></thead>
+              <tbody>
+                <tr><td><span class="param-tag">$100</span></td><td><strong>X</strong></td><td>Pasos/mm eje horizontal (izquierda-derecha)</td><td>Grabado deformado horizontalmente, círculos ovalados</td></tr>
+                <tr><td><span class="param-tag">$101</span></td><td><strong>Y</strong></td><td>Pasos/mm eje de profundidad (frente-atrás)</td><td>Piezas con longitud incorrecta, círculos ovalados</td></tr>
+                <tr><td><span class="param-tag">$102</span></td><td><strong>Z</strong></td><td>Pasos/mm eje vertical (profundidad de corte)</td><td>Profundidad de corte incorrecta, relieves desproporcionados</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- 6.1  FÓRMULA Y CALCULADORA                            -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="accordion" id="acc61">
+        <div class="accordion-header open">
+          <span class="accordion-phase-num">6.1</span>
+          <span>Fórmula de calibración y calculadora automática</span>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body open">
+          <div class="formula-box">
+            <div class="formula-label">Fórmula — Video 1, minuto 11:00 a 11:43</div>
+            Nuevos pasos = (Pasos actuales × Distancia pedida) ÷ Distancia real medida
+          </div>
+          <div class="example-block">
+            <div class="ex-title">📌 Ejemplo numérico (Video 1)</div>
+            <div class="ex-line"><span class="ex-key">Pasos actuales ($100)</span><span class="ex-val">800 pasos/mm</span></div>
+            <div class="ex-line"><span class="ex-key">Distancia pedida (G-code)</span><span class="ex-val">100.00 mm</span></div>
+            <div class="ex-line"><span class="ex-key">Distancia real medida (Vernier)</span><span class="ex-val">98.50 mm</span></div>
+            <div class="ex-line"><span class="ex-key">Cálculo: (800 × 100) ÷ 98.50</span><span class="ex-val">= 812.18 pasos/mm</span></div>
+            <div class="ex-line"><span class="ex-key">Nuevo valor para $100</span><span class="ex-val">812.18</span></div>
+          </div>
+          <h4 style="margin:16px 0 8px;">🧮 Calculadora interactiva</h4>
+          <div class="calc-grid">
+            <div class="calc-field"><label>Pasos actuales (steps/mm)</label><input type="number" id="calc_current" placeholder="ej: 800" step="0.01"/></div>
+            <div class="calc-field"><label>Distancia pedida (mm)</label><input type="number" id="calc_requested" placeholder="ej: 100" step="0.01" value="100"/></div>
+            <div class="calc-field"><label>Distancia real medida (mm)</label><input type="number" id="calc_real" placeholder="ej: 98.50" step="0.01"/></div>
+          </div>
+          <div class="calc-result">
+            <div class="calc-result-label">Nuevos pasos por milímetro a ingresar en GRBL</div>
+            <div class="calc-result-value" id="calc_output">— pasos/mm</div>
+            <div class="calc-result-sub" id="calc_error_pct">Ingresa los tres valores para calcular</div>
+          </div>
+          <div class="video-ref" style="margin-top:14px;">
+            <div class="video-thumb">▶</div>
+            <div class="video-info">
+              <div class="video-title">Wizard de UGS — el asistente calcula los pasos automáticamente</div>
+              <div class="video-timestamp">Video 1 — minuto 11:00 a 14:00</div>
+            </div>
+            <div class="video-btn"><a href="https://www.youtube.com/watch?v=nGwUf8uNWBU&t=660" target="_blank" class="btn btn-secondary btn-sm">▶ Ver</a></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- 6.2  EJE X                                            -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="accordion" id="acc62">
+        <div class="accordion-header">
+          <span class="accordion-phase-num">6.2</span>
+          <span>Calibración Eje X ($100) — minuto 05:10 a 15:00</span>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="video-ref">
+            <div class="video-thumb">▶</div>
+            <div class="video-info"><div class="video-title">Eje X completo</div><div class="video-timestamp">Video 1 — 05:10 a 15:00</div></div>
+            <div class="video-btn"><a href="https://www.youtube.com/watch?v=nGwUf8uNWBU&t=310" target="_blank" class="btn btn-secondary btn-sm">▶ Ver</a></div>
+          </div>
+          <div class="tag-list"><span class="tag">🔧 Calibrador Vernier</span><span class="tag">💻 UGS</span><span class="tag">📏 Cinta de carrocero</span><span class="tag">✏️ Marcador</span></div>
+          <ol class="step-list" style="margin:14px 0;">
+            <li class="step-item"><div class="step-num">1</div><div class="step-content"><strong>Conectar en UGS y leer $$</strong> — Escribe <code>$$</code> en la consola y anota el valor de $100. <a href="https://www.youtube.com/watch?v=nGwUf8uNWBU&t=124" target="_blank" style="color:var(--accent);">📹 02:04</a></div></li>
+            <li class="step-item"><div class="step-num">2</div><div class="step-content"><strong>Colocar cinta paralela al eje X</strong> sobre la cama y marcar el punto de inicio.</div></li>
+            <li class="step-item"><div class="step-num">3</div><div class="step-content"><strong>⚠️ Eliminar backlash:</strong> desplaza 5–10 mm en dirección X antes de marcar. Esto es el error más frecuente en principiantes. <a href="https://www.youtube.com/watch?v=nGwUf8uNWBU&t=494" target="_blank" style="color:var(--accent);">📹 08:14</a></div></li>
+            <li class="step-item"><div class="step-num">4</div><div class="step-content"><strong>Enviar:</strong> <code style="font-family:var(--font-data);color:var(--accent);">G91 G0 X100</code> — mueve 100 mm en modo relativo. Marca la posición final.</div></li>
+            <li class="step-item"><div class="step-num">5</div><div class="step-content"><strong>Medir con Vernier</strong> la distancia entre las dos marcas (al menos 2 decimales).</div></li>
+            <li class="step-item"><div class="step-num">6</div><div class="step-content"><strong>Calcular e ingresar:</strong> usa la calculadora de 6.1 y envía <code style="font-family:var(--font-data);color:var(--accent);">$100=VALOR</code> en la consola. <a href="https://www.youtube.com/watch?v=nGwUf8uNWBU&t=660" target="_blank" style="color:var(--accent);">📹 11:00</a></div></li>
+            <li class="step-item"><div class="step-num">7</div><div class="step-content"><strong>Repetir 5 veces</strong> y registrar en la tabla. Error final debe ser ≤ 0.3 mm.</div></li>
+          </ol>
+          <h4 style="margin:16px 0 6px;">Tabla de mediciones — Eje X ($100)</h4>
+          <div class="table-wrap">
+            <table id="tbl_x">
+              <thead><tr><th>Ensayo</th><th>Pedido (mm)</th><th>Medido (mm)</th><th>Error (mm)</th><th>Estado</th></tr></thead>
+              <tbody>
+                <tr data-row="1"><td>1</td><td>100.00</td><td><input class="table-input" data-col="measured" data-row="1" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr data-row="2"><td>2</td><td>100.00</td><td><input class="table-input" data-col="measured" data-row="2" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr data-row="3"><td>3</td><td>100.00</td><td><input class="table-input" data-col="measured" data-row="3" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr data-row="4"><td>4</td><td>100.00</td><td><input class="table-input" data-col="measured" data-row="4" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr data-row="5"><td>5</td><td>100.00</td><td><input class="table-input" data-col="measured" data-row="5" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="stats-box"><div class="stats-row" id="tbl_x_summary">
+            <div class="stat-item"><div class="stat-label">Promedio</div><div class="stat-value table-calc" data-stat="avg">—</div></div>
+            <div class="stat-item"><div class="stat-label">Error máx.</div><div class="stat-value table-calc" data-stat="max">—</div></div>
+            <div class="stat-item"><div class="stat-label">Error mín.</div><div class="stat-value table-calc" data-stat="min">—</div></div>
+            <div class="stat-item"><div class="stat-label">Desv. estándar</div><div class="stat-value table-calc" data-stat="std">—</div></div>
+            <div class="stat-item"><div class="stat-label">Veredicto</div><div class="stat-value" data-stat="verdict">—</div></div>
+          </div></div>
+          <div style="margin-top:8px;"><button class="btn btn-secondary btn-sm" onclick="exportCSV('tbl_x','eje_x_pasos.csv')">⬇ Exportar CSV</button></div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- 6.3  EJE Y                                            -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="accordion" id="acc63">
+        <div class="accordion-header">
+          <span class="accordion-phase-num">6.3</span>
+          <span>Calibración Eje Y ($101) — minuto 15:00 a 17:26</span>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="video-ref">
+            <div class="video-thumb">▶</div>
+            <div class="video-info"><div class="video-title">Eje Y — mismo procedimiento que X</div><div class="video-timestamp">Video 1 — 15:00 a 17:26</div></div>
+            <div class="video-btn"><a href="https://www.youtube.com/watch?v=nGwUf8uNWBU&t=900" target="_blank" class="btn btn-secondary btn-sm">▶ Ver</a></div>
+          </div>
+          <div class="alert alert-info"><span class="alert-icon">ℹ️</span><div class="alert-text">El procedimiento es <strong>idéntico al eje X</strong>. Solo cambia el comando: <code style="font-family:var(--font-data);color:var(--accent);">G91 G0 Y100</code> y el parámetro a modificar: <code style="font-family:var(--font-data);color:var(--accent);">$101=VALOR</code>. Calibra siempre un eje a la vez.</div></div>
+          <h4 style="margin:14px 0 6px;">Tabla de mediciones — Eje Y ($101)</h4>
+          <div class="table-wrap">
+            <table id="tbl_y">
+              <thead><tr><th>Ensayo</th><th>Pedido (mm)</th><th>Medido (mm)</th><th>Error (mm)</th><th>Estado</th></tr></thead>
+              <tbody>
+                <tr data-row="1"><td>1</td><td>100.00</td><td><input class="table-input" data-col="measured" data-row="1" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr data-row="2"><td>2</td><td>100.00</td><td><input class="table-input" data-col="measured" data-row="2" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr data-row="3"><td>3</td><td>100.00</td><td><input class="table-input" data-col="measured" data-row="3" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr data-row="4"><td>4</td><td>100.00</td><td><input class="table-input" data-col="measured" data-row="4" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr data-row="5"><td>5</td><td>100.00</td><td><input class="table-input" data-col="measured" data-row="5" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="stats-box"><div class="stats-row" id="tbl_y_summary">
+            <div class="stat-item"><div class="stat-label">Promedio</div><div class="stat-value table-calc" data-stat="avg">—</div></div>
+            <div class="stat-item"><div class="stat-label">Error máx.</div><div class="stat-value table-calc" data-stat="max">—</div></div>
+            <div class="stat-item"><div class="stat-label">Error mín.</div><div class="stat-value table-calc" data-stat="min">—</div></div>
+            <div class="stat-item"><div class="stat-label">Desv. estándar</div><div class="stat-value table-calc" data-stat="std">—</div></div>
+            <div class="stat-item"><div class="stat-label">Veredicto</div><div class="stat-value" data-stat="verdict">—</div></div>
+          </div></div>
+          <div style="margin-top:8px;"><button class="btn btn-secondary btn-sm" onclick="exportCSV('tbl_y','eje_y_pasos.csv')">⬇ Exportar CSV</button></div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- 6.4  EJE Z                                            -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="accordion" id="acc64">
+        <div class="accordion-header">
+          <span class="accordion-phase-num">6.4</span>
+          <span>Calibración Eje Z ($102) — minuto 17:26 a 22:03</span>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="video-ref">
+            <div class="video-thumb">▶</div>
+            <div class="video-info"><div class="video-title">Eje Z — Vernier en posición vertical</div><div class="video-timestamp">Video 1 — 17:26 a 22:03 · Técnica especial para medir desplazamiento vertical</div></div>
+            <div class="video-btn"><a href="https://www.youtube.com/watch?v=nGwUf8uNWBU&t=1046" target="_blank" class="btn btn-secondary btn-sm">▶ Ver</a></div>
+          </div>
+          <div class="alert alert-warning"><span class="alert-icon">⚠️</span><div class="alert-text"><strong>Diferencia importante:</strong> El eje Z trabaja contra la gravedad. El husillo puede deslizarse si los motores se desactivan. Nunca apagues los motores durante la medición. El backlash en Z suele ser mayor que en X e Y.</div></div>
+          <ol class="step-list" style="margin:14px 0;">
+            <li class="step-item"><div class="step-num">1</div><div class="step-content"><strong>Leer $102</strong> con <code style="font-family:var(--font-data);color:var(--accent);">$$</code> en la consola de UGS.</div></li>
+            <li class="step-item"><div class="step-num">2</div><div class="step-content"><strong>Apoyar el Vernier de pie</strong> sobre la cama, escala hacia arriba, parte fija en la cama apuntando al husillo. <a href="https://www.youtube.com/watch?v=nGwUf8uNWBU&t=1046" target="_blank" style="color:var(--accent);">📹 17:26</a></div></li>
+            <li class="step-item"><div class="step-num">3</div><div class="step-content"><strong>Bajar el husillo</strong> hasta tocar el tope del Vernier. Anota la lectura inicial.</div></li>
+            <li class="step-item"><div class="step-num">4</div><div class="step-content"><strong>Eliminar backlash en Z:</strong> sube 5 mm y vuelve a bajar. Confirma contacto y anota lectura de inicio.</div></li>
+            <li class="step-item"><div class="step-num">5</div><div class="step-content"><strong>Enviar:</strong> <code style="font-family:var(--font-data);color:var(--accent);">G91 G0 Z50</code> — sube 50 mm. Mide el desplazamiento real con el Vernier.</div></li>
+            <li class="step-item"><div class="step-num">6</div><div class="step-content"><strong>Calcular e ingresar:</strong> <code style="font-family:var(--font-data);color:var(--accent);">$102=VALOR</code> en la consola.</div></li>
+            <li class="step-item"><div class="step-num">7</div><div class="step-content"><strong>Repetir 5 veces</strong> y registrar. Error final ≤ 0.3 mm en 50 mm.</div></li>
+          </ol>
+          <h4 style="margin:16px 0 6px;">Tabla de mediciones — Eje Z ($102)</h4>
+          <div class="table-wrap">
+            <table id="tbl_z">
+              <thead><tr><th>Ensayo</th><th>Pedido (mm)</th><th>Medido (mm)</th><th>Error (mm)</th><th>Estado</th></tr></thead>
+              <tbody>
+                <tr data-row="1"><td>1</td><td>50.00</td><td><input class="table-input" data-col="measured" data-row="1" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr data-row="2"><td>2</td><td>50.00</td><td><input class="table-input" data-col="measured" data-row="2" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr data-row="3"><td>3</td><td>50.00</td><td><input class="table-input" data-col="measured" data-row="3" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr data-row="4"><td>4</td><td>50.00</td><td><input class="table-input" data-col="measured" data-row="4" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr data-row="5"><td>5</td><td>50.00</td><td><input class="table-input" data-col="measured" data-row="5" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="stats-box"><div class="stats-row" id="tbl_z_summary">
+            <div class="stat-item"><div class="stat-label">Promedio</div><div class="stat-value table-calc" data-stat="avg">—</div></div>
+            <div class="stat-item"><div class="stat-label">Error máx.</div><div class="stat-value table-calc" data-stat="max">—</div></div>
+            <div class="stat-item"><div class="stat-label">Error mín.</div><div class="stat-value table-calc" data-stat="min">—</div></div>
+            <div class="stat-item"><div class="stat-label">Desv. estándar</div><div class="stat-value table-calc" data-stat="std">—</div></div>
+            <div class="stat-item"><div class="stat-label">Veredicto</div><div class="stat-value" data-stat="verdict">—</div></div>
+          </div></div>
+          <div style="margin-top:8px;"><button class="btn btn-secondary btn-sm" onclick="exportCSV('tbl_z','eje_z_pasos.csv')">⬇ Exportar CSV</button></div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- 6.5  DIAGNÓSTICO                                      -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="accordion" id="acc65">
+        <div class="accordion-header">
+          <span class="accordion-phase-num">6.5</span>
+          <span>Errores comunes y diagnóstico</span>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="diag-grid">
+            <div class="diag-item"><div class="diag-title">Error diferente en cada ensayo</div><div class="diag-fix">→ Backlash no eliminado. Revisar tuercas anti-backlash del husillo.</div></div>
+            <div class="diag-item"><div class="diag-title">Error siempre en el mismo sentido</div><div class="diag-fix">→ Valor de pasos/mm incorrecto. Recalcular con la fórmula o usar el Wizard de UGS.</div></div>
+            <div class="diag-item"><div class="diag-title">Los valores $100/$101/$102 no se guardan</div><div class="diag-fix">→ Verificar conexión USB. Puede requerirse <code>$RST=*</code>.</div></div>
+            <div class="diag-item"><div class="diag-title">Error muy grande (&gt;5 mm en 100 mm)</div><div class="diag-fix">→ El valor de microstepping puede estar mal. Revisa los jumpers de la placa controladora.</div></div>
+            <div class="diag-item"><div class="diag-title">Medición imprecisa con el Vernier</div><div class="diag-fix">→ Asegura que las mordazas queden perpendiculares. Una leve inclinación genera error.</div></div>
+            <div class="diag-item"><div class="diag-title">Calibrando varios ejes a la vez</div><div class="diag-fix">→ Trabaja SIEMPRE un eje a la vez. Si modificas $100 y $101 juntos no sabrás cuál era el problema.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- 6.6  CHECKLIST                                        -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="accordion" id="acc66">
+        <div class="accordion-header open">
+          <span class="accordion-phase-num">6.6</span>
+          <span>Checklist de validación de Fase 6</span>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body open">
+          <ul class="checklist">
+            <li class="check-item"><div class="check-box"></div><span class="check-label">UGS conectado y parámetros $$ verificados</span></li>
+            <li class="check-item"><div class="check-box"></div><span class="check-label">Valor inicial de $100 registrado</span></li>
+            <li class="check-item"><div class="check-box"></div><span class="check-label">Eje X calibrado — error &lt; 0.3 mm en 100 mm</span></li>
+            <li class="check-item"><div class="check-box"></div><span class="check-label">Valor inicial de $101 registrado</span></li>
+            <li class="check-item"><div class="check-box"></div><span class="check-label">Eje Y calibrado — error &lt; 0.3 mm en 100 mm</span></li>
+            <li class="check-item"><div class="check-box"></div><span class="check-label">Valor inicial de $102 registrado</span></li>
+            <li class="check-item"><div class="check-box"></div><span class="check-label">Eje Z calibrado — error &lt; 0.3 mm en 50 mm</span></li>
+            <li class="check-item"><div class="check-box"></div><span class="check-label">Valores $100, $101, $102 confirmados con $$ final</span></li>
+            <li class="check-item"><div class="check-box"></div><span class="check-label">Tablas exportadas a CSV</span></li>
+            <li class="check-item"><div class="check-box"></div><span class="check-label">Fase 6 completa — proceder a Fase 7</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- NAV BOTONES -->
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:24px;margin-bottom:40px;">
+        <a href="fase5.html" class="btn btn-secondary">← Fase 5: Spindle</a>
+        <button class="btn btn-secondary" onclick="exportPDF()">🖨 Exportar PDF</button>
+        <a href="fase7.html" class="btn btn-primary">Fase 7: Validación final →</a>
+      </div>
+
+    </div><!-- /page-content -->
+  </main>
+</div><!-- /app-shell -->
+
+<script src="sidebar.js"></script>
+<script src="nav.js"></script>
+<script>
+}
+
+/* ── CALCULADORA ── */
+function initCalc() {
+  ['calc_current','calc_requested','calc_real'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', recalcCalc);
+  });
+}
+function recalcCalc() {
+  const c = parseFloat(document.getElementById('calc_current')?.value);
+  const r = parseFloat(document.getElementById('calc_requested')?.value);
+  const m = parseFloat(document.getElementById('calc_real')?.value);
+  const out = document.getElementById('calc_output');
+  const sub = document.getElementById('calc_error_pct');
+  if (!out) return;
+  if (!isNaN(c) && !isNaN(r) && !isNaN(m) && m > 0) {
+    const ns  = (c * r) / m;
+    const err = Math.abs(m - r);
+    const pct = (err / r) * 100;
+    out.textContent = ns.toFixed(4) + ' pasos/mm';
+    sub.textContent = `Error actual: ${err.toFixed(3)} mm (${pct.toFixed(2)}%) en ${r} mm pedidos`;
+    out.style.color = err <= 0.1 ? 'var(--green)' : err <= 0.3 ? 'var(--yellow)' : 'var(--red)';
+  } else {
+    out.textContent = '— pasos/mm';
+    sub.textContent = 'Ingresa los tres valores para calcular';
+    out.style.color = 'var(--accent)';
+  }
+}
+
+/* ── TABLAS ── */
+const AXIS = {
+  tbl_x: { target:100, pass:0.1, warn:0.3 },
+  tbl_y: { target:100, pass:0.1, warn:0.3 },
+  tbl_z: { target:50,  pass:0.1, warn:0.3 },
+};
+function initAxisTable(id) {
+  const cfg = AXIS[id];
+  const tbl = document.getElementById(id);
+  if (!tbl || !cfg) return;
+  tbl.querySelectorAll('[data-col="measured"]').forEach(inp => {
+    const key = `cnc_f6_${id}_${inp.dataset.row}`;
+    const sv = localStorage.getItem(key);
+    if (sv) inp.value = sv;
+    inp.addEventListener('input', () => { localStorage.setItem(key, inp.value); recalcAxis(id, cfg); });
+  });
+  recalcAxis(id, cfg);
+}
+function recalcAxis(id, cfg) {
+  const tbl = document.getElementById(id);
+  if (!tbl) return;
+  const errs = [];
+  tbl.querySelectorAll('tbody tr').forEach(row => {
+    const inp  = row.querySelector('[data-col="measured"]');
+    const meas = parseFloat(inp?.value);
+    if (isNaN(meas)) return;
+    const err = meas - cfg.target;
+    const abs = Math.abs(err);
+    errs.push(abs);
+    const errCell = row.querySelector('[data-col="error"]');
+    if (errCell) errCell.textContent = err.toFixed(4);
+    inp.classList.remove('ok','warn','fail');
+    inp.classList.add(abs <= cfg.pass ? 'ok' : abs <= cfg.warn ? 'warn' : 'fail');
+    const st = row.querySelector('[data-col="status"]');
+    if (st) st.innerHTML = abs <= cfg.pass
+      ? '<span class="badge badge-green" style="font-size:10px">✓</span>'
+      : abs <= cfg.warn
+        ? '<span class="badge badge-yellow" style="font-size:10px">~</span>'
+        : '<span class="badge badge-red" style="font-size:10px">✗</span>';
+  });
+  if (!errs.length) return;
+  const avg = errs.reduce((a,b)=>a+b,0)/errs.length;
+  const max = Math.max(...errs);
+  const min = Math.min(...errs);
+  const std = Math.sqrt(errs.map(e=>(e-avg)**2).reduce((a,b)=>a+b,0)/errs.length);
+  const sum = document.getElementById(id+'_summary');
+  if (!sum) return;
+  sum.querySelector('[data-stat="avg"]').textContent = avg.toFixed(4)+' mm';
+  sum.querySelector('[data-stat="max"]').textContent = max.toFixed(4)+' mm';
+  sum.querySelector('[data-stat="min"]').textContent = min.toFixed(4)+' mm';
+  sum.querySelector('[data-stat="std"]').textContent = std.toFixed(4)+' mm';
+  const v = sum.querySelector('[data-stat="verdict"]');
+  if (v) v.innerHTML = avg <= cfg.pass
+    ? '<span class="badge badge-green">🟢 APROBADO</span>'
+    : avg <= cfg.warn
+      ? '<span class="badge badge-yellow">🟡 ACEPTABLE</span>'
+      : '<span class="badge badge-red">🔴 REQUIERE AJUSTE</span>';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initCalc();
+  initAxisTable('tbl_x');
+  initAxisTable('tbl_y');
+  initAxisTable('tbl_z');
+  initChecklists('fase6');
+  updatePhaseProgress();
+});
+</script>
+</body>
+</html>
