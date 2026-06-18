@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fase 5 — Calibración del Spindle · CNC 3018 PRO B2</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    /* ─── ESTILOS LOCALES FASE 5 ─────────────────────────────── */
+
+    /* Bloques de referencia de video */
+    .video-ref {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: var(--blue-bg);
+      border: 1px solid rgba(59,130,246,0.3);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin: 16px 0;
+    }
+    .video-ref-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+    .video-ref-body { flex: 1; }
+    .video-ref-title { font-weight: 700; color: var(--text); font-size: 13px; margin-bottom: 4px; }
+    .video-ref-meta  { font-size: 12px; color: var(--text2); margin-bottom: 8px; }
+    .video-ref-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--blue); color: #fff;
+      border: none; border-radius: var(--radius); padding: 5px 12px;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      text-decoration: none; transition: opacity .2s;
+    }
+    .video-ref-btn:hover { opacity: .85; color: #fff; }
+    .video-ref-tag {
+      display:inline-block; background:rgba(59,130,246,.18);
+      border:1px solid rgba(59,130,246,.3); border-radius:4px;
+      font-size:11px; padding:1px 7px; color:var(--blue); margin-left:6px;
+      font-family: var(--font-data);
+    }
+
+    /* Nota complementaria (información sin video fuente) */
+    .note-complement {
+      display: flex; gap: 10px; align-items: flex-start;
+      background: rgba(234,179,8,.08); border-left: 3px solid var(--yellow);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 12px 14px; margin: 12px 0; font-size: 13px;
+    }
+    .note-complement strong { color: var(--yellow); }
+
+    /* Alerta de seguridad */
+    .alert-safety {
+      display: flex; gap: 10px; align-items: flex-start;
+      background: rgba(239,68,68,.08); border-left: 3px solid var(--red);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 12px 14px; margin: 12px 0; font-size: 13px;
+    }
+
+    /* Steps numerados */
+    .steps { counter-reset: step; display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }
+    .step {
+      counter-increment: step;
+      display: flex; gap: 14px; align-items: flex-start;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 14px 16px;
+    }
+    .step::before {
+      content: counter(step);
+      background: var(--accent); color: #fff;
+      font-family: var(--font-data); font-size: 12px; font-weight: 700;
+      width: 26px; height: 26px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .step-body { flex: 1; }
+    .step-title { font-weight: 700; color: var(--text); margin-bottom: 4px; font-size: 14px; }
+    .step-detail { font-size: 13px; color: var(--text2); line-height: 1.55; }
+
+    /* Diagrama ASCII */
+    .ascii-diagram {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 20px;
+      font-family: var(--font-data); font-size: 12px; color: var(--accent2);
+      white-space: pre; overflow-x: auto; margin: 14px 0; line-height: 1.5;
+    }
+
+    /* Tabla de criterios */
+    .criteria-table { width:100%; border-collapse:collapse; font-size:13px; margin:16px 0; }
+    .criteria-table th {
+      background: var(--bg3); color: var(--text2);
+      padding: 9px 12px; text-align:left; font-size:11px;
+      text-transform:uppercase; letter-spacing:.05em;
+      border-bottom: 1px solid var(--border);
+    }
+    .criteria-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align:middle; }
+    .criteria-table tr:last-child td { border-bottom:none; }
+    .criteria-table tr:hover td { background: var(--bg3); }
+
+    /* Tabla de medición interactiva */
+    .meas-table { width:100%; border-collapse:collapse; font-size:13px; margin:12px 0; }
+    .meas-table th {
+      background: var(--bg3); color:var(--text2);
+      padding:8px 10px; text-align:center; font-size:11px;
+      text-transform:uppercase; letter-spacing:.05em;
+      border-bottom:1px solid var(--border);
+    }
+    .meas-table td { padding:6px 8px; border-bottom:1px solid var(--border); text-align:center; vertical-align:middle; }
+    .meas-table tr:last-child td { border-bottom:none; }
+    .table-input {
+      width:100%; background:var(--bg); border:1px solid var(--border);
+      border-radius:4px; padding:5px 8px; color:var(--text);
+      font-family:var(--font-data); font-size:12px; text-align:center;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .table-input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-glow); }
+    .table-input.ok   { border-color:var(--green);  background:var(--green-bg);  }
+    .table-input.warn { border-color:var(--yellow); background:var(--yellow-bg); }
+    .table-input.fail { border-color:var(--red);    background:var(--red-bg);    }
+
+    /* Summary stats */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr));
+      gap:10px; margin-top:12px;
+    }
+    .stat-cell {
+      background:var(--bg3); border:1px solid var(--border);
+      border-radius:var(--radius); padding:10px 12px; text-align:center;
+    }
+    .stat-label { font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:.05em; margin-bottom:4px; }
+    .stat-value { font-family:var(--font-data); font-size:16px; font-weight:700; color:var(--text); }
+    .stat-value.verdict { font-size:13px; }
+
+    /* Diagnóstico */
+    .diag-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0; }
+    @media(max-width:640px){ .diag-grid{grid-template-columns:1fr;} }
+    .diag-card {
+      background:var(--bg3); border:1px solid var(--border);
+      border-radius:var(--radius); padding:14px;
+    }
+    .diag-cause { font-weight:700; color:var(--red); font-size:13px; margin-bottom:6px; }
+    .diag-fix { font-size:12px; color:var(--text2); line-height:1.5; }
+
+    /* Pills de herramientas */
+    .tool-pills { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0; }
+    .tool-pill {
+      background:var(--accent-glow); border:1px solid var(--accent);
+      color:var(--accent2); border-radius:20px;
+      padding:3px 10px; font-size:11px; font-weight:600;
+    }
+
+    /* Error-list */
+    .error-list { list-style:none; display:flex; flex-direction:column; gap:8px; margin:10px 0; }
+    .error-list li {
+      display:flex; gap:10px; align-items:flex-start;
+      background:var(--red-bg); border:1px solid rgba(239,68,68,.25);
+      border-radius:var(--radius); padding:10px 12px; font-size:13px;
+    }
+    .error-list li::before { content:"⚠"; font-size:14px; flex-shrink:0; }
+
+    /* Info grid 2 cols */
+    .info-2col { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:14px 0; }
+    @media(max-width:600px){ .info-2col{grid-template-columns:1fr;} }
+    .info-box {
+      background:var(--bg3); border:1px solid var(--border);
+      border-radius:var(--radius); padding:14px;
+    }
+    .info-box-label { font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
+    .info-box-value { font-size:13px; color:var(--text); line-height:1.5; }
+
+    /* Botón exportar CSV */
+    .table-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:8px; }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <div id="sidebar-mount"></div>
+
+  <main class="main">
+    <!-- ═══════════════════════ TOPBAR ═══════════════════════ -->
+    <div class="topbar">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <div class="topbar-breadcrumb">
+        <a href="index.html">Dashboard</a>
+        <span class="crumb-sep">›</span>
+        <span class="crumb-current">Fase 5 — Calibración del Spindle</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-secondary btn-sm" onclick="exportPDF()">🖨 Imprimir</button>
+        <a href="fase6.html" class="btn btn-primary btn-sm">Siguiente fase →</a>
+      </div>
+    </div>
+
+    <div class="page-content">
+
+      <!-- ═══════ ENCABEZADO ═══════ -->
+      <div class="page-header">
+        <div class="page-eyebrow">Fase 05 de 07 · Calibración del Spindle</div>
+        <h1 class="page-title">Alineación, tramming y runout del husillo</h1>
+        <p class="page-subtitle">
+          Verificar que el eje de rotación del spindle sea perfectamente perpendicular
+          a la mesa de trabajo. Un spindle mal alineado produce cortes con escalones,
+          superficies inclinadas y marcas de herramienta visibles.
+        </p>
+      </div>
+
+      <!-- PROGRESO DE FASE -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="flex items-center justify-between mb-8">
+          <h3 style="margin:0">Progreso de esta fase</h3>
+          <span id="phaseProgressLabel" class="text-sm text-muted">0 / 0 completados</span>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="phaseProgressFill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <!-- PREREQUISITO -->
+      <div class="alert-safety">
+        <span style="font-size:20px;flex-shrink:0">🔒</span>
+        <div>
+          <strong style="color:var(--red)">Prerequisito bloqueante:</strong>
+          Esta fase solo puede ejecutarse si la <strong>Fase 4 (Verificación geométrica)</strong>
+          fue completada y aprobada. La nivelación y perpendicularidad de ejes son la base
+          sobre la cual se alinea el spindle.
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- 5.0 — CONCEPTOS BÁSICOS DEL SPINDLE                   -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="section-divider">
+        <div class="section-divider-line"></div>
+        <div class="section-divider-label">5.0 — ¿Qué es el spindle y por qué calibrarlo?</div>
+        <div class="section-divider-line"></div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px">
+        <h3 style="margin-bottom:14px">El spindle: motor + portaherramienta</h3>
+        <p style="margin-bottom:14px;font-size:14px;color:var(--text2)">
+          El <strong style="color:var(--text)">spindle</strong> (husillo) es el motor que hace girar
+          la fresa o broca. En la CNC 3018 PRO B2 es un motor DC que gira entre 7,000 y 30,000 RPM.
+          Para cortar correctamente, debe cumplir dos condiciones:
+        </p>
+        <div class="info-2col">
+          <div class="info-box">
+            <div class="info-box-label">Condición 1 · Perpendicularidad</div>
+            <div class="info-box-value">
+              El eje de giro debe ser perfectamente <strong>perpendicular a la mesa XY</strong>.
+              Si está inclinado, aunque sea 0.5°, producirá cortes con pared inclinada y
+              marcas visibles al planear superficies.
+            </div>
+          </div>
+          <div class="info-box">
+            <div class="info-box-label">Condición 2 · Centrado (runout)</div>
+            <div class="info-box-value">
+              El portaherramienta no debe vibrar ni oscilar al girar. Si tiene
+              <strong>runout</strong> (excentricidad), la fresa no corta en el centro exacto,
+              generando agujeros sobredimensionados y acabados deficientes.
+            </div>
+          </div>
+        </div>
+
+        <div class="ascii-diagram">
+  SPINDLE CORRECTO              SPINDLE MAL TRAMADO
+  
+        ┃  (vertical)               ╱  (inclinado)
+        ┃                          ╱
+     [MOTOR]                   [MOTOR]
+        ┃                        ╱
+       ═╪═  ←fresa            ═╪═
+        ┃                      ╱
+  ══════╪══════ mesa     ══════╪══════ mesa
+        
+  Corte parejo ✓           Corte con escalón ✗
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- 5.1 — VERIFICACIÓN DE ALINEACIÓN VISUAL               -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="section-divider">
+        <div class="section-divider-line"></div>
+        <div class="section-divider-label">5.1 — Verificación visual y checklist previo</div>
+        <div class="section-divider-line"></div>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-header">
+          <span class="accordion-phase-num">5.1</span>
+          <div>
+            <div style="font-weight:700;color:var(--text)">Inspección visual del montaje del spindle</div>
+            <div class="text-xs text-muted mt-8">Antes de medir, verificar que todo esté bien ensamblado</div>
+          </div>
+          <span class="badge badge-orange" style="margin-left:auto;margin-right:12px">Obligatorio</span>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+
+          <h4>¿Qué se verifica aquí?</h4>
+          <p>Antes de usar instrumentos de medición, se comprueba visualmente que el spindle
+          esté bien montado en su soporte y que no haya holgura mecánica obvia. Un problema
+          mecánico que no se corrige antes de medir generará resultados erróneos.</p>
+
+          <div class="video-ref">
+            <div class="video-ref-icon">🎬</div>
+            <div class="video-ref-body">
+              <div class="video-ref-title">Video 3 — Tramming con escuadra y linterna
+                <span class="video-ref-tag">Longmill / principio aplicable</span>
+              </div>
+              <div class="video-ref-meta">Minuto 3:00 – 3:37 · Herramientas necesarias y preparación</div>
+              <a class="video-ref-btn" href="https://www.youtube.com/watch?v=8T_ZasfpDsM&t=180" target="_blank">
+                ▶ Ver en YouTube (3:00)
+              </a>
+            </div>
+          </div>
+
+          <div class="note-complement">
+            <span style="font-size:18px">📌</span>
+            <div><strong>Nota:</strong> Este video muestra una fresadora Longmill, no la CNC 3018 PRO B2.
+            Los principios de verificación visual son idénticos. Las referencias a tornillos o
+            componentes específicos pueden diferir según el modelo exacto de tu 3018.</div>
+          </div>
+
+          <h4 style="margin-top:16px">Checklist de inspección previa</h4>
+          <div class="checklist" style="margin-top:10px">
+            <div class="check-item">
+              <span class="check-box"></span>
+              <span>Motor del spindle fijo en su soporte sin movimiento al empujarlo suavemente</span>
+            </div>
+            <div class="check-item">
+              <span class="check-box"></span>
+              <span>Tornillos del soporte del motor apretados (no deben girar con la mano)</span>
+            </div>
+            <div class="check-item">
+              <span class="check-box"></span>
+              <span>Portabrocas (collet) limpio, sin residuos de material</span>
+            </div>
+            <div class="check-item">
+              <span class="check-box"></span>
+              <span>Ningún cable del motor está bajo tensión mecánica o enredado</span>
+            </div>
+            <div class="check-item">
+              <span class="check-box"></span>
+              <span>El eje Z desplaza el spindle sin trancarse ni vibrar</span>
+            </div>
+            <div class="check-item">
+              <span class="check-box"></span>
+              <span>Fresa o broca de prueba instalada y bien apretada en el collet</span>
+            </div>
+          </div>
+
+          <h4 style="margin-top:18px">Herramientas para esta sección</h4>
+          <div class="tool-pills">
+            <span class="tool-pill">🔧 Llaves Allen</span>
+            <span class="tool-pill">👁 Inspección visual</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- 5.2 — TRAMMING: PERPENDICULARIDAD DEL SPINDLE         -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="section-divider">
+        <div class="section-divider-line"></div>
+        <div class="section-divider-label">5.2 — Tramming del spindle (perpendicularidad)</div>
+        <div class="section-divider-line"></div>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-header">
+          <span class="accordion-phase-num">5.2a</span>
+          <div>
+            <div style="font-weight:700;color:var(--text)">Tramming izquierda–derecha (eje X)</div>
+            <div class="text-xs text-muted mt-8">Verificar y corregir inclinación lateral del spindle</div>
+          </div>
+          <span class="badge badge-orange" style="margin-left:auto;margin-right:12px">Obligatorio</span>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+
+          <h4>Objetivo</h4>
+          <p>Confirmar que el spindle no está inclinado hacia la izquierda ni hacia la derecha
+          cuando se observa desde el frente de la máquina. Esto corresponde a la perpendicularidad
+          del eje de rotación respecto al plano XZ.</p>
+
+          <h4 style="margin-top:14px">¿Por qué importa?</h4>
+          <p>Si el spindle está inclinado lateralmente, al planear una superficie con una fresa
+          plana aparecerán <strong>crestas o escalones</strong> paralelos al eje X.
+          El Video 2 (Avid CNC) muestra exactamente este defecto en el minuto 7:00.</p>
+
+          <div class="video-ref">
+            <div class="video-ref-icon">🎬</div>
+            <div class="video-ref-body">
+              <div class="video-ref-title">Video 2 — Tramming izquierda–derecha
+                <span class="video-ref-tag">Avid CNC Pro Series / principio aplicable</span>
+              </div>
+              <div class="video-ref-meta">Minuto 7:00 – 10:08 · Pasada de prueba y detección de crestas</div>
+              <a class="video-ref-btn" href="https://www.youtube.com/watch?v=2n8KcTBNS4U&t=420" target="_blank">
+                ▶ Ver en YouTube (7:00)
+              </a>
+            </div>
+          </div>
+          <div class="video-ref">
+            <div class="video-ref-icon">🎬</div>
+            <div class="video-ref-body">
+              <div class="video-ref-title">Video 3 — Tramming con escuadra y linterna
+                <span class="video-ref-tag">Longmill / principio aplicable</span>
+              </div>
+              <div class="video-ref-meta">Minuto 7:51 – 9:55 · Verificación con escuadra de taller</div>
+              <a class="video-ref-btn" href="https://www.youtube.com/watch?v=8T_ZasfpDsM&t=471" target="_blank">
+                ▶ Ver en YouTube (7:51)
+              </a>
+            </div>
+          </div>
+
+          <h4 style="margin-top:14px">Herramientas necesarias</h4>
+          <div class="tool-pills">
+            <span class="tool-pill">📐 Escuadra de taller 6×8"</span>
+            <span class="tool-pill">🔦 Linterna pequeña</span>
+            <span class="tool-pill">🔧 Llaves Allen (2.5 mm)</span>
+            <span class="tool-pill">📊 Comparador de carátula (opcional, más preciso)</span>
+          </div>
+
+          <h4 style="margin-top:14px">Método con escuadra y linterna (principiante)</h4>
+          <div class="steps">
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Retirar la fresa del collet</div>
+                <div class="step-detail">Trabajar con el collet vacío o con un vástago cilíndrico de referencia
+                (un pin de acero recto). No usar fresas con filos expuestos por seguridad.
+                <strong>Máquina apagada y desconectada de la corriente.</strong></div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Apoyar la escuadra sobre la mesa</div>
+                <div class="step-detail">Colocar la escuadra de taller directamente sobre la cama de la CNC,
+                con la cara larga vertical y la cara corta apoyada en la mesa. La cara larga debe
+                quedar justo al lado del cuerpo del spindle.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Iluminar el espacio entre escuadra y spindle</div>
+                <div class="step-detail">Apuntar la linterna desde el lado opuesto. Si hay luz que pasa
+                (un triángulo de luz visible), el spindle está inclinado. El objetivo es que
+                <strong>no se vea ningún espacio de luz</strong> en toda la longitud del contacto.
+                Ver Video 3 — 7:51 a 9:55.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Registrar el lado donde aparece la luz</div>
+                <div class="step-detail">Si la luz aparece arriba → el spindle está inclinado hacia afuera (top).
+                Si aparece abajo → está inclinado hacia adentro. Anotar en la tabla de resultados.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Aflojar los tornillos del soporte del motor</div>
+                <div class="step-detail">En la CNC 3018 PRO B2, el motor está sujeto al carro Z por tornillos
+                Allen. Aflojarlos <em>apenas</em> — suficiente para que el motor pueda moverse,
+                pero no tanto que caiga. Ver Video 3 — 11:50 a 16:30 como referencia del principio.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Corregir la inclinación</div>
+                <div class="step-detail">Empujar suavemente el motor en la dirección contraria a donde apareció
+                la luz. Volver a verificar con la escuadra y la linterna. Repetir hasta que
+                no haya luz visible en ningún punto del contacto.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Apretar los tornillos y verificar de nuevo</div>
+                <div class="step-detail">Al apretar los tornillos, la posición puede cambiar ligeramente.
+                Verificar con escuadra + linterna después de apretar. Si el error reapareció,
+                repetir el proceso. Ver Video 3 — 16:35 a 22:15.</div>
+              </div>
+            </div>
+          </div>
+
+          <h4 style="margin-top:16px">Errores comunes</h4>
+          <ul class="error-list">
+            <li>Apretar los tornillos con demasiada fuerza en el primer intento: el motor se mueve y el ajuste se pierde</li>
+            <li>Medir con la linterna apuntando en ángulo: crea ilusión de espacio donde no hay</li>
+            <li>No verificar después de apretar: el apriete siempre mueve el motor unos micrones</li>
+            <li>Usar fresas con filos expuestos durante el ajuste: riesgo de corte</li>
+          </ul>
+
+          <h4 style="margin-top:16px">Criterio de aceptación</h4>
+          <table class="criteria-table">
+            <tr>
+              <th>Método</th><th>Condición para aprobar</th><th>Estado</th>
+            </tr>
+            <tr>
+              <td>Escuadra + linterna</td>
+              <td>Sin luz visible en toda la longitud del contacto lateral</td>
+              <td><span class="badge badge-green">🟢 APROBADO</span></td>
+            </tr>
+            <tr>
+              <td>Comparador de carátula (opcional)</td>
+              <td>Diferencia ≤ 0.05 mm entre lado derecho e izquierdo</td>
+              <td><span class="badge badge-yellow">🟡 ACEPTABLE ≤ 0.10 mm</span></td>
+            </tr>
+          </table>
+
+          <!-- TABLA INTERACTIVA 5.2a -->
+          <h4 style="margin-top:18px">Tabla de registro — Tramming lateral (eje X)</h4>
+          <p style="font-size:13px;color:var(--text2);margin-bottom:10px">
+            Si usas comparador de carátula: registra la lectura en el punto izquierdo
+            y en el punto derecho. El error es la diferencia entre ambos.
+          </p>
+          <table class="meas-table" id="tbl_tramX">
+            <thead>
+              <tr>
+                <th>Intento</th>
+                <th>Lectura Lado Izq. (mm)</th>
+                <th>Lectura Lado Der. (mm)</th>
+                <th>Diferencia (mm)</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="tbl_tramX_body">
+              <tr data-row="0">
+                <td style="color:var(--text2)">1</td>
+                <td><input class="table-input" data-col="left"  data-row="0" placeholder="0.000" type="number" step="0.001"></td>
+                <td><input class="table-input" data-col="right" data-row="0" placeholder="0.000" type="number" step="0.001"></td>
+                <td data-col="diff">—</td>
+                <td data-col="status2">—</td>
+              </tr>
+              <tr data-row="1">
+                <td style="color:var(--text2)">2</td>
+                <td><input class="table-input" data-col="left"  data-row="1" placeholder="0.000" type="number" step="0.001"></td>
+                <td><input class="table-input" data-col="right" data-row="1" placeholder="0.000" type="number" step="0.001"></td>
+                <td data-col="diff">—</td>
+                <td data-col="status2">—</td>
+              </tr>
+              <tr data-row="2">
+                <td style="color:var(--text2)">3 (final)</td>
+                <td><input class="table-input" data-col="left"  data-row="2" placeholder="0.000" type="number" step="0.001"></td>
+                <td><input class="table-input" data-col="right" data-row="2" placeholder="0.000" type="number" step="0.001"></td>
+                <td data-col="diff">—</td>
+                <td data-col="status2">—</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="table-actions">
+            <button class="btn btn-secondary btn-sm" onclick="exportCSV('tbl_tramX','tramming_lateral_X.csv')">↓ CSV</button>
+          </div>
+        </div>
+      </div><!-- fin 5.2a -->
+
+      <!-- ACCORDION 5.2b — Tramming delantero-trasero -->
+      <div class="accordion">
+        <div class="accordion-header">
+          <span class="accordion-phase-num">5.2b</span>
+          <div>
+            <div style="font-weight:700;color:var(--text)">Tramming delantero–trasero (eje Y)</div>
+            <div class="text-xs text-muted mt-8">Verificar y corregir inclinación frontal del spindle</div>
+          </div>
+          <span class="badge badge-orange" style="margin-left:auto;margin-right:12px">Obligatorio</span>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+
+          <h4>Objetivo</h4>
+          <p>Verificar que el spindle no esté inclinado hacia adelante ni hacia atrás.
+          Esta es la segunda dimensión del tramming: la perpendicularidad del eje de rotación
+          respecto al plano YZ.</p>
+
+          <div class="video-ref">
+            <div class="video-ref-icon">🎬</div>
+            <div class="video-ref-body">
+              <div class="video-ref-title">Video 2 — Tramming delantero–trasero / shimming
+                <span class="video-ref-tag">Avid CNC Pro Series / principio aplicable</span>
+              </div>
+              <div class="video-ref-meta">Minuto 10:08 – 11:40 · Pasada perpendicular y ajuste con calzos (shimming)</div>
+              <a class="video-ref-btn" href="https://www.youtube.com/watch?v=2n8KcTBNS4U&t=608" target="_blank">
+                ▶ Ver en YouTube (10:08)
+              </a>
+            </div>
+          </div>
+
+          <div class="note-complement">
+            <span style="font-size:18px">📌</span>
+            <div><strong>Información complementaria:</strong> En la CNC 3018 PRO B2 el ajuste delantero-trasero
+            se realiza mediante calzos finos (shims) o láminas de papel/aluminio colocadas entre el
+            soporte del motor y el carro Z. Este principio es el mismo que describe el Video 2 (10:08–11:40)
+            para la Avid CNC, aunque el mecanismo de sujeción difiere.</div>
+          </div>
+
+          <h4 style="margin-top:14px">Herramientas necesarias</h4>
+          <div class="tool-pills">
+            <span class="tool-pill">📐 Escuadra de taller</span>
+            <span class="tool-pill">🔦 Linterna</span>
+            <span class="tool-pill">🔧 Llaves Allen</span>
+            <span class="tool-pill">📄 Láminas de papel / calzos delgados</span>
+          </div>
+
+          <h4 style="margin-top:14px">Procedimiento</h4>
+          <div class="steps">
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Rotar 90° la posición de la escuadra</div>
+                <div class="step-detail">La misma escuadra que se usó para el tramming lateral,
+                ahora se coloca con la cara larga apoyada en el eje Y (mirando la máquina desde un costado).
+                La técnica de linterna es idéntica.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Detectar hacia qué lado se inclina</div>
+                <div class="step-detail">Si la luz aparece en la parte delantera (frente a ti), el spindle
+                se inclina hacia atrás. Si aparece atrás, se inclina hacia adelante. Registrar.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Preparar el calzo (shim)</div>
+                <div class="step-detail">Un papel de 80 gr tiene aproximadamente 0.10 mm de espesor.
+                Una lámina de aluminio de cocina tiene 0.012 mm. Usar la combinación necesaria
+                según el error estimado visualmente. Para errores pequeños, papel es suficiente.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Colocar el calzo entre motor y soporte</div>
+                <div class="step-detail">Aflojar los tornillos del soporte, insertar el calzo
+                en el lado contrario a donde aparece la luz (para empujar el spindle en sentido opuesto),
+                y apretar. Ver Video 2 — 10:08 a 11:20.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Verificar de nuevo y repetir si es necesario</div>
+                <div class="step-detail">Cada iteración mejora el resultado. En promedio,
+                2–3 iteraciones son suficientes para eliminar la luz visible.</div>
+              </div>
+            </div>
+          </div>
+
+          <h4 style="margin-top:16px">Criterio de aceptación</h4>
+          <table class="criteria-table">
+            <tr><th>Método</th><th>Condición para aprobar</th></tr>
+            <tr>
+              <td>Escuadra + linterna</td>
+              <td>Sin luz visible en dirección frontal-trasera</td>
+            </tr>
+            <tr>
+              <td>Comparador de carátula</td>
+              <td>Diferencia frente/atrás ≤ 0.05 mm</td>
+            </tr>
+          </table>
+
+          <!-- TABLA 5.2b -->
+          <h4 style="margin-top:16px">Tabla de registro — Tramming frontal (eje Y)</h4>
+          <table class="meas-table" id="tbl_tramY">
+            <thead>
+              <tr>
+                <th>Intento</th>
+                <th>Lectura Frente (mm)</th>
+                <th>Lectura Atrás (mm)</th>
+                <th>Diferencia (mm)</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-row="0">
+                <td style="color:var(--text2)">1</td>
+                <td><input class="table-input" data-col="front" data-row="0" placeholder="0.000" type="number" step="0.001"></td>
+                <td><input class="table-input" data-col="back"  data-row="0" placeholder="0.000" type="number" step="0.001"></td>
+                <td data-col="diff">—</td>
+                <td data-col="status2">—</td>
+              </tr>
+              <tr data-row="1">
+                <td style="color:var(--text2)">2</td>
+                <td><input class="table-input" data-col="front" data-row="1" placeholder="0.000" type="number" step="0.001"></td>
+                <td><input class="table-input" data-col="back"  data-row="1" placeholder="0.000" type="number" step="0.001"></td>
+                <td data-col="diff">—</td>
+                <td data-col="status2">—</td>
+              </tr>
+              <tr data-row="2">
+                <td style="color:var(--text2)">3 (final)</td>
+                <td><input class="table-input" data-col="front" data-row="2" placeholder="0.000" type="number" step="0.001"></td>
+                <td><input class="table-input" data-col="back"  data-row="2" placeholder="0.000" type="number" step="0.001"></td>
+                <td data-col="diff">—</td>
+                <td data-col="status2">—</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="table-actions">
+            <button class="btn btn-secondary btn-sm" onclick="exportCSV('tbl_tramY','tramming_frontal_Y.csv')">↓ CSV</button>
+          </div>
+        </div>
+      </div><!-- fin 5.2b -->
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- 5.3 — VERIFICACIÓN CON COMPARADOR DE CARÁTULA         -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="section-divider">
+        <div class="section-divider-line"></div>
+        <div class="section-divider-label">5.3 — Tramming con comparador de carátula (método avanzado)</div>
+        <div class="section-divider-line"></div>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-header">
+          <span class="accordion-phase-num">5.3</span>
+          <div>
+            <div style="font-weight:700;color:var(--text)">Medición cuantitativa de perpendicularidad</div>
+            <div class="text-xs text-muted mt-8">Usar comparador de carátula para obtener valores numéricos exactos</div>
+          </div>
+          <span class="badge badge-yellow" style="margin-left:auto;margin-right:12px">Recomendado</span>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+
+          <h4>¿Qué es el comparador de carátula?</h4>
+          <p>Es un instrumento de medición con una aguja que indica desplazamientos con resolución
+          de 0.01 mm (algunos modelos 0.001 mm). Se monta sobre una base magnética y permite
+          comparar dos puntos con precisión milimétrica. Ver Video 4 para aprender su uso básico.</p>
+
+          <div class="video-ref">
+            <div class="video-ref-icon">🎬</div>
+            <div class="video-ref-body">
+              <div class="video-ref-title">Video 4 — Uso del comparador de carátula (dial indicator)</div>
+              <div class="video-ref-meta">Minuto 0:19 – 1:46 · Montaje, puesta a cero y lectura</div>
+              <a class="video-ref-btn" href="https://www.youtube.com/watch?v=UATB3hAMUWo&t=19" target="_blank">
+                ▶ Ver en YouTube (0:19)
+              </a>
+            </div>
+          </div>
+          <div class="video-ref">
+            <div class="video-ref-icon">🎬</div>
+            <div class="video-ref-body">
+              <div class="video-ref-title">Video 5 — Comparador de carátula vs. indicador de prueba</div>
+              <div class="video-ref-meta">Minuto 0:31 – 3:19 · Cuándo usar cada uno y error de coseno</div>
+              <a class="video-ref-btn" href="https://www.youtube.com/watch?v=-YCDLN4scyA&t=31" target="_blank">
+                ▶ Ver en YouTube (0:31)
+              </a>
+            </div>
+          </div>
+          <div class="video-ref">
+            <div class="video-ref-icon">🎬</div>
+            <div class="video-ref-body">
+              <div class="video-ref-title">Video 6 — Haas Automation: uso profesional de indicadores</div>
+              <div class="video-ref-meta">Minuto 0:21 – 5:15 · Indicador de carátula · Minuto 5:16 – 16:38 · Indicador de prueba</div>
+              <a class="video-ref-btn" href="https://www.youtube.com/watch?v=HmWVWtMrNmg&t=21" target="_blank">
+                ▶ Ver en YouTube (0:21)
+              </a>
+            </div>
+          </div>
+
+          <h4 style="margin-top:14px">¿Qué tipo de indicador usar?</h4>
+          <div class="info-2col">
+            <div class="info-box">
+              <div class="info-box-label">Indicador de carátula (recomendado aquí)</div>
+              <div class="info-box-value">
+                Rango amplio (hasta 10 mm). Sin error de coseno si se coloca
+                <strong>perpendicular a la superficie</strong> (90°).
+                Ideal para tramming porque las distancias son grandes.
+                Ver Video 5 — 0:31.
+              </div>
+            </div>
+            <div class="info-box">
+              <div class="info-box-label">Indicador de prueba / palanca</div>
+              <div class="info-box-value">
+                Resolución más fina, pero introduce <strong>error de coseno</strong> si
+                el estilete no está paralelo a la superficie.
+                Más difícil de posicionar correctamente en espacios reducidos.
+                Ver Video 5 — 0:52 a 3:19.
+              </div>
+            </div>
+          </div>
+
+          <div class="alert-safety" style="margin-top:14px">
+            <span style="font-size:18px">⚠️</span>
+            <div><strong>Error de coseno:</strong> Si el indicador de prueba no está paralelo a la
+            superficie que mide, la lectura es menor que el error real. Cuanto más inclinado,
+            mayor el error oculto. Para tramming en la 3018, usar preferiblemente el comparador
+            de carátula montado en base magnética con el vástago perpendicular a la mesa.
+            Ver Video 6 — 5:16 a 16:38.</div>
+          </div>
+
+          <h4 style="margin-top:16px">Herramientas necesarias</h4>
+          <div class="tool-pills">
+            <span class="tool-pill">📊 Comparador de carátula (0.01 mm)</span>
+            <span class="tool-pill">🧲 Base magnética</span>
+            <span class="tool-pill">🔧 Llaves Allen</span>
+            <span class="tool-pill">📄 Calzos / shims</span>
+          </div>
+
+          <h4 style="margin-top:14px">Procedimiento detallado</h4>
+          <div class="steps">
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Montar la base magnética en la cama de la CNC</div>
+                <div class="step-detail">Activar el imán sobre una zona metálica de la cama o de la
+                estructura. La base debe estar firme — verificar tirando suavemente.
+                Ver Video 4 — 0:19 a 0:30.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Posicionar el comparador junto al spindle</div>
+                <div class="step-detail">El vástago del comparador debe quedar vertical y tocar la
+                mesa en un punto conocido. La sonda debe estar perpendicular a la superficie
+                medida — no inclinada. Presión de contacto: apenas la suficiente para que la
+                aguja se mueva unos 0.5 mm desde el cero mecánico.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Poner a cero el comparador</div>
+                <div class="step-detail">Girar la carátula exterior del instrumento hasta que el "0"
+                coincida con la aguja. Este es el punto de referencia.
+                Ver Video 4 — 0:31 a 0:43.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Medir en el punto opuesto del mismo eje</div>
+                <div class="step-detail">Mover el eje X manualmente (con la máquina apagada o usando jog)
+                hasta el punto opuesto (izquierda→derecha, o frente→atrás). Leer el valor que muestra
+                la aguja. Este es el error de tramming en ese eje.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Registrar y ajustar</div>
+                <div class="step-detail">Si el error supera 0.05 mm, ajustar el spindle como se
+                explicó en 5.2a/5.2b. Repetir la medición después de cada ajuste hasta quedar
+                dentro del criterio de aceptación.</div>
+              </div>
+            </div>
+          </div>
+
+          <h4 style="margin-top:16px">Tabla de medición — Tramming con comparador</h4>
+          <table class="meas-table" id="tbl_trammingComp">
+            <thead>
+              <tr>
+                <th>Eje</th>
+                <th>Punto A (mm)</th>
+                <th>Punto B (mm)</th>
+                <th>Diferencia |A-B| (mm)</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-row="0">
+                <td style="color:var(--text2);font-weight:700">X (lat.)</td>
+                <td><input class="table-input" data-col="pa" data-row="0" placeholder="0.000" type="number" step="0.001"></td>
+                <td><input class="table-input" data-col="pb" data-row="0" placeholder="0.000" type="number" step="0.001"></td>
+                <td data-col="diff">—</td>
+                <td data-col="status2">—</td>
+              </tr>
+              <tr data-row="1">
+                <td style="color:var(--text2);font-weight:700">Y (front.)</td>
+                <td><input class="table-input" data-col="pa" data-row="1" placeholder="0.000" type="number" step="0.001"></td>
+                <td><input class="table-input" data-col="pb" data-row="1" placeholder="0.000" type="number" step="0.001"></td>
+                <td data-col="diff">—</td>
+                <td data-col="status2">—</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="table-actions">
+            <button class="btn btn-secondary btn-sm" onclick="exportCSV('tbl_trammingComp','tramming_comparador.csv')">↓ CSV</button>
+          </div>
+        </div>
+      </div><!-- fin 5.3 -->
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- 5.4 — VERIFICACIÓN DE RUNOUT                          -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="section-divider">
+        <div class="section-divider-line"></div>
+        <div class="section-divider-label">5.4 — Runout del husillo (excentricidad)</div>
+        <div class="section-divider-line"></div>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-header">
+          <span class="accordion-phase-num">5.4</span>
+          <div>
+            <div style="font-weight:700;color:var(--text)">Medición de runout (vibración/excentricidad)</div>
+            <div class="text-xs text-muted mt-8">Verificar que el portaherramienta gire de manera perfectamente centrada</div>
+          </div>
+          <span class="badge badge-orange" style="margin-left:auto;margin-right:12px">Obligatorio</span>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+
+          <h4>¿Qué es el runout?</h4>
+          <p>El <strong>runout</strong> (también llamado TIR — Total Indicator Reading o excentricidad total)
+          es la diferencia entre el punto más alto y el más bajo de la superficie de un eje giratorio.
+          En el spindle, indica cuánto oscila el portaherramienta respecto al eje teórico de rotación.</p>
+
+          <div class="ascii-diagram">
+  SIN RUNOUT                    CON RUNOUT
+  
+  El eje gira perfectamente     El eje oscila al girar
+  en su centro                  
+       ●  ← eje ideal                ●  ← eje real (oscila)
+      ╱│╲                           ╱│╲  ~0.05mm
+     ╱ │ ╲                         ╱ │ ╲ ←→ 
+    ╱  │  ╲                       ╱  │  ╲
+  
+  Aguja comparador: estática   Aguja: sube y baja al girar
+  TIR = 0.00 mm                TIR = diferencia máx - mín
+          </div>
+
+          <div class="video-ref">
+            <div class="video-ref-icon">🎬</div>
+            <div class="video-ref-body">
+              <div class="video-ref-title">Video 5 — Medición de runout en torno (principio aplicable)</div>
+              <div class="video-ref-meta">Minuto 0:31 – 1:01 · Indicador de carátula para runout · Minuto 5:07 – 7:01 · Flexión en soporte</div>
+              <a class="video-ref-btn" href="https://www.youtube.com/watch?v=-YCDLN4scyA&t=31" target="_blank">
+                ▶ Ver en YouTube (0:31)
+              </a>
+            </div>
+          </div>
+          <div class="video-ref">
+            <div class="video-ref-icon">🎬</div>
+            <div class="video-ref-body">
+              <div class="video-ref-title">Video 6 — Haas: uso del indicador de carátula para runout</div>
+              <div class="video-ref-meta">Minuto 0:21 – 5:15 · Configuración, carga inicial y lectura</div>
+              <a class="video-ref-btn" href="https://www.youtube.com/watch?v=HmWVWtMrNmg&t=21" target="_blank">
+                ▶ Ver en YouTube (0:21)
+              </a>
+            </div>
+          </div>
+
+          <div class="alert-safety">
+            <span style="font-size:18px">⚠️</span>
+            <div><strong>Seguridad:</strong> El runout se mide con el spindle encendido a baja velocidad,
+            o girando el collet manualmente (motor apagado). Para medir en movimiento, la carga inicial
+            del comparador debe ser la mínima necesaria, y <strong>nunca poner el dedo en el eje giratorio</strong>.
+            Ver Video 5 — 5:07 a 7:01 sobre flexión del soporte por presión excesiva.</div>
+          </div>
+
+          <h4 style="margin-top:14px">Herramientas necesarias</h4>
+          <div class="tool-pills">
+            <span class="tool-pill">📊 Comparador de carátula (0.01 mm o mejor)</span>
+            <span class="tool-pill">🧲 Base magnética</span>
+            <span class="tool-pill">🔩 Pin de acero / vástago de referencia recto</span>
+          </div>
+
+          <h4 style="margin-top:14px">Procedimiento</h4>
+          <div class="steps">
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Instalar un pin de referencia en el collet</div>
+                <div class="step-detail">Usar un vástago cilíndrico recto (pin de acero calibrado o
+                el cuerpo de una broca sin filo). No usar fresas con helicoides — son irregulares.
+                El pin debe sobresalir al menos 20 mm del collet.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Montar el comparador con base magnética</div>
+                <div class="step-detail">Posicionar la sonda del comparador tocando el lateral del pin,
+                con el vástago <strong>perpendicular al eje del pin</strong> (horizontal, apuntando
+                al centro del spindle). Aplicar apenas la presión suficiente — la aguja debe desplazarse
+                0.5 mm desde cero mecánico. Ver Video 4 — 0:19 a 0:30 y Video 6 — 0:21.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Poner a cero el comparador</div>
+                <div class="step-detail">Girar la carátula exterior hasta que el "0" coincida con la aguja.
+                Ver Video 4 — 0:31 a 0:43.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Girar el spindle lentamente (a mano, motor apagado)</div>
+                <div class="step-detail">Con el motor apagado, girar el collet a mano dando una vuelta
+                completa (360°). Observar el movimiento máximo y mínimo de la aguja.
+                El TIR = valor máximo − valor mínimo. Ver Video 5 — 0:44 a 1:01.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Registrar en 3 posiciones axiales del pin</div>
+                <div class="step-detail">Medir cerca del collet (5 mm), a media distancia (15 mm)
+                y en el extremo del pin (25 mm). El runout generalmente aumenta con la distancia.
+                Registrar los 3 valores.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Repetir 3 veces por posición</div>
+                <div class="step-detail">Para obtener un resultado confiable. Si los valores varían
+                mucho entre repeticiones, hay holgura en el soporte del comparador — verificar
+                que la base magnética esté bien fija. Ver Video 5 — 7:01 sobre flexión del soporte.</div>
+              </div>
+            </div>
+          </div>
+
+          <h4 style="margin-top:16px">Cómo calcular el TIR</h4>
+          <div class="info-box" style="margin:12px 0">
+            <div class="info-box-label">Fórmula del Runout (TIR)</div>
+            <div class="info-box-value" style="font-family:var(--font-data);font-size:14px;letter-spacing:.02em">
+              TIR = Lectura máxima − Lectura mínima<br><br>
+              Ejemplo: máx = +0.03 mm, mín = −0.02 mm<br>
+              TIR = 0.03 − (−0.02) = <strong style="color:var(--accent)">0.05 mm</strong>
+            </div>
+          </div>
+
+          <!-- TABLA RUNOUT -->
+          <h4 style="margin-top:16px">Tabla de medición — Runout del spindle</h4>
+          <p style="font-size:13px;color:var(--text2);margin-bottom:10px">
+            Ingresa la lectura máxima y mínima del comparador para cada posición y ensayo.
+            El TIR se calcula automáticamente.
+          </p>
+          <table class="meas-table" id="tbl_runout">
+            <thead>
+              <tr>
+                <th>Posición</th>
+                <th>Ensayo</th>
+                <th>Lect. Máx. (mm)</th>
+                <th>Lect. Mín. (mm)</th>
+                <th>TIR (mm)</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="tbl_runout_body">
+              <!-- 3 posiciones × 3 ensayos = 9 filas -->
+              <tr data-pos="cerca" data-row="0">
+                <td rowspan="3" style="color:var(--accent2);font-weight:700;vertical-align:middle">Cerca<br>(5 mm)</td>
+                <td style="color:var(--text2)">1</td>
+                <td><input class="table-input runout-max" data-row="0" placeholder="0.000" type="number" step="0.001"></td>
+                <td><input class="table-input runout-min" data-row="0" placeholder="0.000" type="number" step="0.001"></td>
+                <td class="runout-tir" data-row="0">—</td>
+                <td class="runout-status" data-row="0">—</td>
+              </tr>
+              <tr data-row="1">
+                <td style="color:var(--text2)">2</td>
+                <td><input class="table-input runout-max" data-row="1" placeholder="0.000" type="number" step="0.001"></td>
+                <td><input class="table-input runout-min" data-row="1" placeholder="0.000" type="number" step="0.001"></td>
+                <td class="runout-tir" data-row="1">—</td>
+                <td class="runout-status" data-row="1">—</td>
+              </tr>
+              <tr data-row="2">
+                <td style="color:var(--text2)">3</td>
+                <td><input class="table-input runout-max" data-row="2" placeholder="0.000" type="number" step="0.001"></td>
+                <td><input class="table-input runout-min" data-row="2" placeholder="0.000" type="number" step="0.001"></td>
+                <td class="runout-tir" data-row="2">—</td>
+                <td class="runout-status" data-row="2">—</td>
+              </tr>
+              <tr data-pos="media" data-row="3">
+                <td rowspan="3" style="color:var(--accent2);font-weight:700;vertical-align:middle">Media<br>(15 mm)</td>
+                <td style="color:var(--text2)">1</td>
+                <td><input class="table-input runout-max" data-row="3" placeholder="0.000" type="number" step="0.001"></td>
+                <td><input class="table-input runout-min" data-row="3" placeholder="0.000" type="number" step="0.001"></td>
+                <td class="runout-tir" data-row="3">—</td>
+                <td class="runout-status" data-row="3">—</td>
+              </tr>
+              <tr data-row="4">
+                <td style="color:var(--text2)">2</td>
+                <td><input class="table-input runout-max" data-row="4" placeholder="0.000" type="number" step="0.001"></td>
+                <td><input class="table-input runout-min" data-row="4" placeholder="0.000" type="number" step="0.001"></td>
+                <td class="runout-tir" data-row="4">—</td>
+                <td class="runout-status" data-row="4">—</td>
+              </tr>
+              <tr data-row="5">
+                <td style="color:var(--text2)">3</td>
+                <td><input class="table-input runout-max" data-row="5" placeholder="0.000" type="number" step="0.001"></td>
+                <td><input class="table-input runout-min" data-row="5" placeholder="0.000" type="number" step="0.001"></td>
+                <td class="runout-tir" data-row="5">—</td>
+                <td class="runout-status" data-row="5">—</td>
+              </tr>
+              <tr data-pos="lejos" data-row="6">
+                <td rowspan="3" style="color:var(--accent2);font-weight:700;vertical-align:middle">Lejos<br>(25 mm)</td>
+                <td style="color:var(--text2)">1</td>
+                <td><input class="table-input runout-max" data-row="6" placeholder="0.000" type="number" step="0.001"></td>
+                <td><input class="table-input runout-min" data-row="6" placeholder="0.000" type="number" step="0.001"></td>
+                <td class="runout-tir" data-row="6">—</td>
+                <td class="runout-status" data-row="6">—</td>
+              </tr>
+              <tr data-row="7">
+                <td style="color:var(--text2)">2</td>
+                <td><input class="table-input runout-max" data-row="7" placeholder="0.000" type="number" step="0.001"></td>
+                <td><input class="table-input runout-min" data-row="7" placeholder="0.000" type="number" step="0.001"></td>
+                <td class="runout-tir" data-row="7">—</td>
+                <td class="runout-status" data-row="7">—</td>
+              </tr>
+              <tr data-row="8">
+                <td style="color:var(--text2)">3</td>
+                <td><input class="table-input runout-max" data-row="8" placeholder="0.000" type="number" step="0.001"></td>
+                <td><input class="table-input runout-min" data-row="8" placeholder="0.000" type="number" step="0.001"></td>
+                <td class="runout-tir" data-row="8">—</td>
+                <td class="runout-status" data-row="8">—</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- STATS RUNOUT -->
+          <div id="tbl_runout_summary">
+            <div class="stats-grid" style="margin-top:14px">
+              <div class="stat-cell">
+                <div class="stat-label">TIR Promedio</div>
+                <div class="stat-value" data-stat="avg">—</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-label">TIR Máximo</div>
+                <div class="stat-value" data-stat="max">—</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-label">TIR Mínimo</div>
+                <div class="stat-value" data-stat="min">—</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-label">Veredicto</div>
+                <div class="stat-value verdict" data-stat="verdict">—</div>
+              </div>
+            </div>
+          </div>
+          <div class="table-actions">
+            <button class="btn btn-secondary btn-sm" onclick="exportCSV('tbl_runout','runout_spindle.csv')">↓ CSV</button>
+          </div>
+
+          <h4 style="margin-top:18px">Criterio de aceptación — Runout</h4>
+          <table class="criteria-table">
+            <tr>
+              <th>Parámetro</th><th>🟢 Aprobado</th><th>🟡 Aceptable</th><th>🔴 Requiere ajuste</th>
+            </tr>
+            <tr>
+              <td>TIR cerca del collet (5 mm)</td>
+              <td>≤ 0.02 mm</td>
+              <td>0.02 – 0.05 mm</td>
+              <td>&gt; 0.05 mm</td>
+            </tr>
+            <tr>
+              <td>TIR a 15 mm del collet</td>
+              <td>≤ 0.04 mm</td>
+              <td>0.04 – 0.08 mm</td>
+              <td>&gt; 0.08 mm</td>
+            </tr>
+            <tr>
+              <td>TIR a 25 mm del collet</td>
+              <td>≤ 0.06 mm</td>
+              <td>0.06 – 0.12 mm</td>
+              <td>&gt; 0.12 mm</td>
+            </tr>
+          </table>
+          <p class="text-xs text-muted" style="margin-top:6px">
+            * Valores sugeridos para CNC 3018 PRO B2 de uso educativo/hobby.
+            No provienen directamente de los videos — son referencias complementarias razonables para este tipo de máquina.
+          </p>
+        </div>
+      </div><!-- fin 5.4 -->
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- 5.5 — VERIFICACIÓN FINAL CON PASADA DE PLANEADO       -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="section-divider">
+        <div class="section-divider-line"></div>
+        <div class="section-divider-label">5.5 — Verificación funcional: pasada de planeado</div>
+        <div class="section-divider-line"></div>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-header">
+          <span class="accordion-phase-num">5.5</span>
+          <div>
+            <div style="font-weight:700;color:var(--text)">Prueba de corte: planeado del spoilboard</div>
+            <div class="text-xs text-muted mt-8">Confirmar el tramming con una pasada real sobre material</div>
+          </div>
+          <span class="badge badge-yellow" style="margin-left:auto;margin-right:12px">Recomendado</span>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+
+          <h4>¿Por qué hacer esta prueba?</h4>
+          <p>Las mediciones con escuadra y comparador son buenas, pero la prueba definitiva
+          del tramming es hacer una pasada de planeado y verificar visualmente (y con calibrador)
+          que no hayan escalones ni marcas entre pasadas. Ver Video 3 — 22:30 a 22:54.</p>
+
+          <div class="video-ref">
+            <div class="video-ref-icon">🎬</div>
+            <div class="video-ref-body">
+              <div class="video-ref-title">Video 3 — Verificación final con pasada de planeado</div>
+              <div class="video-ref-meta">Minuto 22:30 – 22:54 · Inspección de superficie después del ajuste</div>
+              <a class="video-ref-btn" href="https://www.youtube.com/watch?v=8T_ZasfpDsM&t=1350" target="_blank">
+                ▶ Ver en YouTube (22:30)
+              </a>
+            </div>
+          </div>
+
+          <h4 style="margin-top:14px">Procedimiento simplificado</h4>
+          <div class="steps">
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Instalar una fresa de superficie plana (flat endmill)</div>
+                <div class="step-detail">Usar una fresa de 2 o 3 mm de diámetro. Asegurarse de que
+                esté correctamente apretada en el collet.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Programar una pasada de planeado superficial</div>
+                <div class="step-detail">Profundidad de corte: 0.2 mm. Stepover: 60–70% del diámetro
+                de la fresa. Área: al menos 50×50 mm. Velocidad: la recomendada para el material
+                (MDF, madera balsa o material de sacrificio).</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Ejecutar el programa y observar la superficie</div>
+                <div class="step-detail">Iluminar la superficie con luz rasante (linterna inclinada).
+                Una superficie bien tramada muestra un acabado uniforme sin escalones visibles
+                entre pasadas. Escalones = spindle todavía inclinado.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-body">
+                <div class="step-title">Medir la superficie con calibrador</div>
+                <div class="step-detail">Deslizar el calibrador Vernier sobre la superficie planeada.
+                Si hay escalón, se sentirá el tope. Medir en múltiples puntos y registrar
+                la diferencia máxima.</div>
+              </div>
+            </div>
+          </div>
+
+          <h4 style="margin-top:14px">Checklist de aprobación de la prueba de planeado</h4>
+          <div class="checklist">
+            <div class="check-item">
+              <span class="check-box"></span>
+              <span>No hay escalones visibles entre pasadas de la fresa</span>
+            </div>
+            <div class="check-item">
+              <span class="check-box"></span>
+              <span>La superficie refleja la luz uniformemente en toda el área</span>
+            </div>
+            <div class="check-item">
+              <span class="check-box"></span>
+              <span>El calibrador Vernier desliza sin tope sobre la superficie</span>
+            </div>
+            <div class="check-item">
+              <span class="check-box"></span>
+              <span>Diferencia de altura entre puntos ≤ 0.05 mm (Aprobado) o ≤ 0.10 mm (Aceptable)</span>
+            </div>
+          </div>
+        </div>
+      </div><!-- fin 5.5 -->
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- 5.6 — DIAGNÓSTICO DE PROBLEMAS                        -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="section-divider">
+        <div class="section-divider-line"></div>
+        <div class="section-divider-label">5.6 — Diagnóstico: si las pruebas fallan</div>
+        <div class="section-divider-line"></div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px">
+        <h3 style="margin-bottom:16px">¿Qué hacer si el spindle no pasa las pruebas?</h3>
+        <div class="diag-grid">
+          <div class="diag-card">
+            <div class="diag-cause">🔴 Tramming lateral no corrige</div>
+            <div class="diag-fix">
+              El soporte del motor puede estar doblado o la ranura de ajuste tiene rebabas.
+              Limpiar las superficies de contacto. Si el error supera 0.5 mm, revisar si
+              el soporte del eje Z está alineado (volver a Fase 3).
+            </div>
+          </div>
+          <div class="diag-card">
+            <div class="diag-cause">🔴 Tramming frontal no corrige con shims</div>
+            <div class="diag-fix">
+              Verificar que los calzos (shims) estén distribuidos uniformemente y no
+              solo en un punto. Si el error es muy grande (&gt;0.3 mm), puede deberse
+              a que el carro Z no está perpendicular (revisar Fase 4).
+            </div>
+          </div>
+          <div class="diag-card">
+            <div class="diag-cause">🔴 Runout alto cerca del collet</div>
+            <div class="diag-fix">
+              El collet puede estar sucio o dañado. Limpiar con cepillo y solvente.
+              Si el runout persiste, el pin de medición puede no ser recto — probar
+              con otro pin de referencia antes de concluir que el collet es el problema.
+            </div>
+          </div>
+          <div class="diag-card">
+            <div class="diag-cause">🔴 Runout aumenta mucho con la distancia</div>
+            <div class="diag-fix">
+              Normal en cierta medida — el error de excentricidad se amplifica con la
+              distancia. Si el TIR a 25 mm es más de 3× el TIR a 5 mm, el collet o
+              el eje del motor puede estar ligeramente doblado.
+            </div>
+          </div>
+          <div class="diag-card">
+            <div class="diag-cause">🔴 Escalones visibles después de planeado</div>
+            <div class="diag-fix">
+              Repetir tramming. Si persiste: verificar que la mesa de trabajo no esté
+              alabeada (Fase 4 — nivelación). La mesa también puede necesitar planeado
+              propio si nunca fue procesada.
+            </div>
+          </div>
+          <div class="diag-card">
+            <div class="diag-cause">🟡 Lecturas del comparador inestables</div>
+            <div class="diag-fix">
+              Verificar que la base magnética esté bien fijada — un soporte flojo genera
+              lecturas que varían al mínimo toque. Ver Video 5 — 5:07 a 7:01.
+              Aplicar carga inicial adecuada: la aguja debe desplazarse ~0.5 mm desde cero.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- RESUMEN DE FASE 5                                      -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="section-divider">
+        <div class="section-divider-line"></div>
+        <div class="section-divider-label">Resumen · Fase 5</div>
+        <div class="section-divider-line"></div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px">
+        <h3 style="margin-bottom:16px">Tabla de validación — Fase 5: Spindle</h3>
+        <table class="criteria-table" id="tbl_resumen5">
+          <thead>
+            <tr>
+              <th>Prueba</th>
+              <th>Resultado registrado</th>
+              <th>Criterio</th>
+              <th>Estado</th>
+              <th>Observaciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>5.1 Inspección visual</td>
+              <td><input class="table-input" style="width:120px" placeholder="OK / Falla"></td>
+              <td>Sin holgura visible</td>
+              <td><span class="badge badge-yellow">Pendiente</span></td>
+              <td><input class="table-input" placeholder="Notas..."></td>
+            </tr>
+            <tr>
+              <td>5.2a Tramming lateral X</td>
+              <td><input class="table-input" style="width:100px" placeholder="0.000 mm"></td>
+              <td>≤ 0.05 mm</td>
+              <td><span class="badge badge-yellow">Pendiente</span></td>
+              <td><input class="table-input" placeholder="Notas..."></td>
+            </tr>
+            <tr>
+              <td>5.2b Tramming frontal Y</td>
+              <td><input class="table-input" style="width:100px" placeholder="0.000 mm"></td>
+              <td>≤ 0.05 mm</td>
+              <td><span class="badge badge-yellow">Pendiente</span></td>
+              <td><input class="table-input" placeholder="Notas..."></td>
+            </tr>
+            <tr>
+              <td>5.3 Tramming c/ comparador</td>
+              <td><input class="table-input" style="width:100px" placeholder="0.000 mm"></td>
+              <td>≤ 0.05 mm</td>
+              <td><span class="badge badge-yellow">Pendiente</span></td>
+              <td><input class="table-input" placeholder="Notas..."></td>
+            </tr>
+            <tr>
+              <td>5.4 Runout (TIR promedio)</td>
+              <td><input class="table-input" style="width:100px" placeholder="0.000 mm"></td>
+              <td>≤ 0.05 mm</td>
+              <td><span class="badge badge-yellow">Pendiente</span></td>
+              <td><input class="table-input" placeholder="Notas..."></td>
+            </tr>
+            <tr>
+              <td>5.5 Planeado de verificación</td>
+              <td><input class="table-input" style="width:120px" placeholder="OK / Falla"></td>
+              <td>Sin escalones visibles</td>
+              <td><span class="badge badge-yellow">Pendiente</span></td>
+              <td><input class="table-input" placeholder="Notas..."></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="table-actions" style="margin-top:12px">
+          <button class="btn btn-secondary btn-sm" onclick="exportCSV('tbl_resumen5','resumen_fase5.csv')">↓ Exportar resumen CSV</button>
+          <button class="btn btn-primary btn-sm" onclick="exportPDF()">🖨 Imprimir fase</button>
+        </div>
+      </div>
+
+      <!-- NAV BOTTOM -->
+      <div class="flex items-center justify-between" style="margin-top:32px;padding-top:20px;border-top:1px solid var(--border)">
+        <a href="fase4.html" class="btn btn-secondary">← Fase 4: Verificación geométrica</a>
+        <a href="fase6.html" class="btn btn-primary">Fase 6: Pasos por mm →</a>
+      </div>
+
+    </div><!-- /page-content -->
+  </main>
+</div><!-- /app-shell -->
+
+<script src="sidebar.js"></script>
+<script src="nav.js"></script>
+<script>
+/* ============================================================
+   fase5.js — Lógica específica de Fase 5: Spindle
+   ============================================================ */
+
+/* ─── TABLA TRAMMING (diferencia entre 2 puntos) ─────────── */
+function initTrammingTable(tableId, colA, colB, passMM, warnMM) {
+  const table = document.getElementById(tableId);
+  if (!table) return;
+
+  function recalc() {
+    const rows = table.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+      const aInp = row.querySelector(`[data-col="${colA}"]`);
+      const bInp = row.querySelector(`[data-col="${colB}"]`);
+      if (!aInp || !bInp) return;
+      const a = parseFloat(aInp.value);
+      const b = parseFloat(bInp.value);
+      if (isNaN(a) || isNaN(b)) return;
+      const diff = Math.abs(a - b);
+      const diffCell   = row.querySelector('[data-col="diff"]');
+      const statusCell = row.querySelector('[data-col="status2"]');
+      if (diffCell)   diffCell.textContent = diff.toFixed(4);
+      if (statusCell) {
+        if      (diff <= passMM) statusCell.innerHTML = '<span class="badge badge-green">🟢 OK</span>';
+        else if (diff <= warnMM) statusCell.innerHTML = '<span class="badge badge-yellow">🟡 ACEPTABLE</span>';
+        else                     statusCell.innerHTML = '<span class="badge badge-red">🔴 AJUSTAR</span>';
+      }
+      // Colorear inputs
+      [aInp, bInp].forEach(inp => {
+        inp.classList.remove('ok','warn','fail');
+        if      (diff <= passMM) inp.classList.add('ok');
+        else if (diff <= warnMM) inp.classList.add('warn');
+        else                     inp.classList.add('fail');
+      });
+      // Guardar en localStorage
+      const ns = tableId;
+      localStorage.setItem(`${ns}_${colA}_${row.dataset.row}`, aInp.value);
+      localStorage.setItem(`${ns}_${colB}_${row.dataset.row}`, bInp.value);
+    });
+  }
+
+  // Restaurar valores guardados
+  table.querySelectorAll('tbody tr').forEach(row => {
+    const r = row.dataset.row;
+    const aInp = row.querySelector(`[data-col="${colA}"]`);
+    const bInp = row.querySelector(`[data-col="${colB}"]`);
+    if (aInp) { const v = localStorage.getItem(`${tableId}_${colA}_${r}`); if(v) aInp.value = v; }
+    if (bInp) { const v = localStorage.getItem(`${tableId}_${colB}_${r}`); if(v) bInp.value = v; }
+  });
+
+  table.querySelectorAll('input').forEach(inp => inp.addEventListener('input', recalc));
+  recalc();
+}
+
+/* ─── TABLA DE COMPARADOR (2 puntos, misma lógica) ────────── */
+function initComparadorTable() {
+  const table = document.getElementById('tbl_trammingComp');
+  if (!table) return;
+  function recalc() {
+    table.querySelectorAll('tbody tr').forEach(row => {
+      const pa = parseFloat(row.querySelector('[data-col="pa"]')?.value);
+      const pb = parseFloat(row.querySelector('[data-col="pb"]')?.value);
+      if (isNaN(pa) || isNaN(pb)) return;
+      const diff = Math.abs(pa - pb);
+      const dc = row.querySelector('[data-col="diff"]');
+      const sc = row.querySelector('[data-col="status2"]');
+      if (dc) dc.textContent = diff.toFixed(4);
+      if (sc) {
+        if      (diff <= 0.05) sc.innerHTML = '<span class="badge badge-green">🟢 OK</span>';
+        else if (diff <= 0.10) sc.innerHTML = '<span class="badge badge-yellow">🟡 ACEPTABLE</span>';
+        else                   sc.innerHTML = '<span class="badge badge-red">🔴 AJUSTAR</span>';
+      }
+    });
+  }
+  table.querySelectorAll('input').forEach(i => i.addEventListener('input', recalc));
+  recalc();
+}
+
+/* ─── TABLA RUNOUT ────────────────────────────────────────── */
+function initRunoutTable() {
+  const PASS = 0.05, WARN = 0.10;
+
+  function recalc() {
+    const tirs = [];
+    document.querySelectorAll('#tbl_runout tbody tr').forEach(row => {
+      const r    = row.dataset.row;
+      const maxI = row.querySelector('.runout-max');
+      const minI = row.querySelector('.runout-min');
+      if (!maxI || !minI) return;
+      const mx = parseFloat(maxI.value);
+      const mn = parseFloat(minI.value);
+      if (isNaN(mx) || isNaN(mn)) return;
+      const tir  = Math.abs(mx - mn);
+      tirs.push(tir);
+      const tirCell = row.querySelector('.runout-tir');
+      const stCell  = row.querySelector('.runout-status');
+      if (tirCell) tirCell.textContent = tir.toFixed(4);
+      if (stCell) {
+        if      (tir <= PASS) stCell.innerHTML = '<span class="badge badge-green">🟢 OK</span>';
+        else if (tir <= WARN) stCell.innerHTML = '<span class="badge badge-yellow">🟡 ACEPTABLE</span>';
+        else                  stCell.innerHTML = '<span class="badge badge-red">🔴 AJUSTAR</span>';
+      }
+      [maxI, minI].forEach(inp => {
+        inp.classList.remove('ok','warn','fail');
+        if      (tir <= PASS) inp.classList.add('ok');
+        else if (tir <= WARN) inp.classList.add('warn');
+        else                  inp.classList.add('fail');
+      });
+      // localStorage
+      localStorage.setItem(`runout_max_${r}`, maxI.value);
+      localStorage.setItem(`runout_min_${r}`, minI.value);
+    });
+
+    if (tirs.length === 0) return;
+    const avg = tirs.reduce((a,b)=>a+b,0)/tirs.length;
+    const max = Math.max(...tirs);
+    const min = Math.min(...tirs);
+    const sum = document.getElementById('tbl_runout_summary');
+    if (sum) {
+      const avgEl = sum.querySelector('[data-stat="avg"]');
+      const maxEl = sum.querySelector('[data-stat="max"]');
+      const minEl = sum.querySelector('[data-stat="min"]');
+      const vEl   = sum.querySelector('[data-stat="verdict"]');
+      if (avgEl) avgEl.textContent = avg.toFixed(4) + ' mm';
+      if (maxEl) maxEl.textContent = max.toFixed(4) + ' mm';
+      if (minEl) minEl.textContent = min.toFixed(4) + ' mm';
+      if (vEl) {
+        if      (avg <= PASS) vEl.innerHTML = '<span class="badge badge-green">🟢 APROBADO</span>';
+        else if (avg <= WARN) vEl.innerHTML = '<span class="badge badge-yellow">🟡 ACEPTABLE</span>';
+        else                  vEl.innerHTML = '<span class="badge badge-red">🔴 REQUIERE AJUSTE</span>';
+      }
+    }
+  }
+
+  // Restaurar localStorage
+  document.querySelectorAll('#tbl_runout tbody tr').forEach(row => {
+    const r    = row.dataset.row;
+    const maxI = row.querySelector('.runout-max');
+    const minI = row.querySelector('.runout-min');
+    if (maxI) { const v = localStorage.getItem(`runout_max_${r}`); if(v) maxI.value = v; }
+    if (minI) { const v = localStorage.getItem(`runout_min_${r}`); if(v) minI.value = v; }
+  });
+
+  document.querySelectorAll('#tbl_runout input').forEach(i => i.addEventListener('input', recalc));
+  recalc();
+}
+
+/* ─── INIT ───────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  initTrammingTable('tbl_tramX', 'left',  'right', 0.05, 0.10);
+  initTrammingTable('tbl_tramY', 'front', 'back',  0.05, 0.10);
+  initComparadorTable();
+  initRunoutTable();
+  initChecklists('fase5');
+  updatePhaseProgress();
+});
+</script>
+</body>
+</html>
