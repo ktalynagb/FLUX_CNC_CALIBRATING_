@@ -103,7 +103,7 @@
 
       <!-- ═══════ KPIs ═══════ -->
       <div class="kpi-row">
-        <div class="kpi-card"><div class="kpi-label">Pruebas totales</div><div class="kpi-value b" id="kpi_total">14</div><div class="kpi-sub">En 7 fases del protocolo</div></div>
+        <div class="kpi-card"><div class="kpi-label">Pruebas totales</div><div class="kpi-value b" id="kpi_total">15</div><div class="kpi-sub">En 7 fases del protocolo</div></div>
         <div class="kpi-card"><div class="kpi-label">Aprobadas 🟢</div><div class="kpi-value g" id="kpi_pass">—</div><div class="kpi-sub">Dentro del límite</div></div>
         <div class="kpi-card"><div class="kpi-label">Aceptables 🟡</div><div class="kpi-value y" id="kpi_warn">—</div><div class="kpi-sub">Requieren monitoreo</div></div>
         <div class="kpi-card"><div class="kpi-label">Requieren ajuste 🔴</div><div class="kpi-value r" id="kpi_fail">—</div><div class="kpi-sub">Fuera de tolerancia</div></div>
@@ -140,12 +140,55 @@
       </div>
 
       <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- 7.1b  REPETIBILIDAD FINAL — MÁQUINA ENSAMBLADA        -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="accordion" id="acc71b">
+        <div class="accordion-header">
+          <span class="accordion-phase-num">7.1b</span>
+          <span>Repetibilidad final — máquina completamente ensamblada</span>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+          <h4>¿Por qué repetir esta prueba aquí?</h4>
+          <p style="font-size:13px;color:var(--text2);">
+            Las pruebas de repetibilidad de la Fase 3 se hicieron eje por eje, inmediatamente después de cada unión.
+            Esta prueba final se hace con la <strong>máquina 100% ensamblada</strong>, con el spindle montado y los tres ejes
+            trabajando juntos — es la validación real de cómo se comportará la CNC en producción.
+          </p>
+
+          <div class="formula-box">
+            <div class="formula-label">Cálculo de repetibilidad</div>
+            R = Posición_max – Posición_min<br>
+            <span style="font-size:11px;color:var(--text2)">Rango de variación de todas las mediciones al volver al mismo punto objetivo</span>
+          </div>
+
+          <div class="alert alert-source mb-12">
+            <span class="alert-icon">📚</span>
+            <div class="alert-text"><strong>Información complementaria técnica:</strong> Este procedimiento no proviene directamente de los videos suministrados; es la extensión natural del método de repetibilidad por eje (Fase 3) aplicado a la máquina completa, como control de cierre del protocolo.</div>
+          </div>
+
+          <ol class="step-list">
+            <li class="step-item"><span class="step-num">1</span><div class="step-content">Montar el comparador de carátula con base del Dial sobre la mesa, con la sonda tocando el husillo o el spindle.</div></li>
+            <li class="step-item"><span class="step-num">2</span><div class="step-content">Mover la máquina (X, Y y Z simultáneamente) a una posición de referencia conocida. Poner el comparador a cero.</div></li>
+            <li class="step-item"><span class="step-num">3</span><div class="step-content">Enviar un recorrido de prueba (por ejemplo <code style="font-family:var(--font-data);color:var(--accent);">G91 G0 X20 Y20 Z-10</code>) y luego regresar exactamente al punto de referencia con <code style="font-family:var(--font-data);color:var(--accent);">G91 G0 X-20 Y-20 Z10</code>.</div></li>
+            <li class="step-item"><span class="step-num">4</span><div class="step-content">Registrar la lectura del comparador. Repetir el ciclo completo 10 veces.</div></li>
+            <li class="step-item"><span class="step-num">5</span><div class="step-content">Calcular el error promedio y registrarlo en la tabla maestra de la sección 7.2 (fila "Repetibilidad — máquina completa ensamblada").</div></li>
+          </ol>
+
+          <div class="alert alert-info mt-12">
+            <span class="alert-icon">💡</span>
+            <div class="alert-text">Criterio: <strong>≤ 0.1 mm = Aprobado</strong> · 0.1–0.2 mm = Aceptable · &gt; 0.2 mm = Requiere ajuste. Si el resultado empeora respecto a las pruebas individuales por eje de la Fase 3, revisa acoples y backlash general antes de aprobar la máquina.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════ -->
       <!-- 7.2  TABLA MAESTRA                                    -->
       <!-- ═══════════════════════════════════════════════════════ -->
       <div class="accordion" id="acc72">
         <div class="accordion-header open">
           <span class="accordion-phase-num">7.2</span>
-          <span>Tabla maestra de validación — 14 pruebas</span>
+          <span>Tabla maestra de validación — 15 pruebas</span>
           <span class="accordion-chevron">▼</span>
         </div>
         <div class="accordion-body open">
@@ -261,6 +304,14 @@
                   <td><input class="result-input" type="number" step="0.001" placeholder="0.000" data-row="backlash"/></td>
                   <td>mm</td><td data-col="status">—</td>
                   <td><input class="notes-input" type="text" placeholder="Observaciones..." data-note="13"/></td>
+                </tr>
+                <!-- Fase 7 -->
+                <tr data-pass="0.1" data-warn="0.2" data-type="num">
+                  <td><span class="phase-label-cell">Fase 7</span><span class="test-name-cell">Repetibilidad — máquina completa ensamblada</span></td>
+                  <td>≤ 0.1 mm</td>
+                  <td><input class="result-input" type="number" step="0.001" placeholder="0.000" data-row="repet_final"/></td>
+                  <td>mm</td><td data-col="status">—</td>
+                  <td><input class="notes-input" type="text" placeholder="Punto de referencia usado..." data-note="14"/></td>
                 </tr>
               </tbody>
             </table>
