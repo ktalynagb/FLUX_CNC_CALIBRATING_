@@ -167,13 +167,67 @@
             <div class="alert-text"><strong>Información complementaria técnica:</strong> Este procedimiento no proviene directamente de los videos suministrados; es la extensión natural del método de repetibilidad por eje (Fase 3) aplicado a la máquina completa, como control de cierre del protocolo.</div>
           </div>
 
+          <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Descarga y configuración de UGS</div><div class="section-divider-line"></div></div>
+
+          <div class="alert alert-source mb-12">
+            <span class="alert-icon">📹</span>
+            <div class="alert-text"><strong>Video 1 — minuto 02:04 a 05:10:</strong> Configuración inicial de UGS (Universal Gcode Sender) — instalación, conexión a la CNC y verificación de parámetros GRBL.</div>
+          </div>
+
+          <ol class="step-list">
+            <li class="step-item"><span class="step-num">1</span><div class="step-content"><strong>Descargar UGS:</strong> Ir al repositorio oficial de Universal Gcode Sender (<code style="font-family:var(--font-data);color:var(--accent);">github.com/winder/Universal-G-Code-Sender</code>) y descargar la última versión "Classic" o "Platform" para tu sistema operativo. Requiere Java instalado.</div></li>
+            <li class="step-item"><span class="step-num">2</span><div class="step-content"><strong>Conectar la CNC por USB</strong> al computador. Verificar en el Administrador de dispositivos (Windows) o <code style="font-family:var(--font-data);color:var(--accent);">ls /dev/tty*</code> (Linux/Mac) qué puerto COM asignó el sistema.</div></li>
+            <li class="step-item"><span class="step-num">3</span><div class="step-content"><strong>Abrir UGS</strong> y seleccionar el puerto COM correspondiente. Configurar la velocidad de conexión a <strong>115200 baudios</strong> (estándar GRBL).</div></li>
+            <li class="step-item"><span class="step-num">4</span><div class="step-content">Presionar <strong>Connect</strong>. La consola debe mostrar el mensaje de bienvenida de GRBL (versión del firmware).</div></li>
+            <li class="step-item"><span class="step-num">5</span><div class="step-content"><strong>Verificar parámetros:</strong> Escribir <code style="font-family:var(--font-data);color:var(--accent);">$$</code> en la consola y presionar Enter. Deben listarse todos los parámetros GRBL ($100, $101, $102, etc.) ya calibrados en Fase 6.</div></li>
+            <li class="step-item"><span class="step-num">6</span><div class="step-content"><strong>Probar movimiento:</strong> Usar los botones de jog (flechas direccionales en UGS) para mover cada eje manualmente y confirmar que la dirección coincide con lo esperado.</div></li>
+          </ol>
+
+          <div class="video-ref">
+            <div class="video-thumb">▶</div>
+            <div class="video-info"><div class="video-title">Video 1 — Configuración inicial de UGS</div><div class="video-timestamp">02:04 → 05:10 · Instalación, conexión y verificación de parámetros</div></div>
+            <a href="https://www.youtube.com/watch?v=nGwUf8uNWBU&t=124" target="_blank" class="btn btn-ghost btn-sm video-btn">▶ Ver</a>
+          </div>
+
+          <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Procedimiento de la prueba</div><div class="section-divider-line"></div></div>
+
           <ol class="step-list">
             <li class="step-item"><span class="step-num">1</span><div class="step-content">Montar el comparador de carátula con base del Dial sobre la mesa, con la sonda tocando el husillo o el spindle.</div></li>
             <li class="step-item"><span class="step-num">2</span><div class="step-content">Mover la máquina (X, Y y Z simultáneamente) a una posición de referencia conocida. Poner el comparador a cero.</div></li>
             <li class="step-item"><span class="step-num">3</span><div class="step-content">Enviar un recorrido de prueba (por ejemplo <code style="font-family:var(--font-data);color:var(--accent);">G91 G0 X20 Y20 Z-10</code>) y luego regresar exactamente al punto de referencia con <code style="font-family:var(--font-data);color:var(--accent);">G91 G0 X-20 Y-20 Z10</code>.</div></li>
             <li class="step-item"><span class="step-num">4</span><div class="step-content">Registrar la lectura del comparador. Repetir el ciclo completo 10 veces.</div></li>
-            <li class="step-item"><span class="step-num">5</span><div class="step-content">Calcular el error promedio y registrarlo en la tabla maestra de la sección 7.2 (fila "Repetibilidad — máquina completa ensamblada").</div></li>
+            <li class="step-item"><span class="step-num">5</span><div class="step-content">Calcular el error promedio. El resultado final se transcribe a la tabla maestra de la sección 7.2 (fila "Repetibilidad — máquina completa ensamblada").</div></li>
           </ol>
+
+          <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Tabla de medición — Repetibilidad final (10 ensayos)</div><div class="section-divider-line"></div></div>
+          <div class="table-wrap">
+            <table id="tableFinalRep">
+              <thead><tr><th>#</th><th>Posición obj. (mm)</th><th>Posición medida (mm)</th><th>Error (mm)</th><th>Estado</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="fr1" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr><td>2</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="fr2" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr><td>3</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="fr3" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr><td>4</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="fr4" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr><td>5</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="fr5" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr><td>6</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="fr6" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr><td>7</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="fr7" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr><td>8</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="fr8" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr><td>9</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="fr9" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr><td>10</td><td data-col="target">0</td><td><input class="table-input" data-col="measured" data-row="fr10" type="number" step="0.001" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="stats-box" id="tableFinalRep_summary">
+            <div class="stats-row">
+              <div class="stat-item"><div class="stat-label">Error prom.</div><div class="stat-value" style="font-size:16px" data-stat="avg">—</div></div>
+              <div class="stat-item"><div class="stat-label">Error máx.</div><div class="stat-value" style="font-size:16px" data-stat="max">—</div></div>
+              <div class="stat-item"><div class="stat-label">Desv. Est.</div><div class="stat-value" style="font-size:16px" data-stat="std">—</div></div>
+              <div class="stat-item"><div class="stat-label">Veredicto</div><div class="stat-status" data-stat="verdict">—</div></div>
+            </div>
+          </div>
+          <div class="flex gap-8 mt-8">
+            <button class="btn btn-ghost btn-sm" onclick="exportCSV('tableFinalRep','repetibilidad_final.csv')">⬇ Exportar CSV</button>
+          </div>
 
           <div class="alert alert-info mt-12">
             <span class="alert-icon">💡</span>
@@ -597,6 +651,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initMasterTable();
   initChecklists('fase7');
   updatePhaseProgress();
+  initDataTable('tableFinalRep', { pass:0.1, warn:0.2, target:0 });
   const d=document.getElementById('sign_date');
   if(d&&!d.value){ d.value=new Date().toISOString().split('T')[0]; localStorage.setItem('cnc_f7_sign_date',d.value); }
 });
