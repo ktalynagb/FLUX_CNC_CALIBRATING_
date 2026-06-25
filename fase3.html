@@ -103,20 +103,87 @@
             <div class="alert-text"><strong>Error común:</strong> Apretar los tornillos del carro Z con el eje en posición extrema. Siempre centrar el carro antes de apretar definitivamente para evitar tensiones asimétricas.</div>
           </div>
 
-          <!-- Tabla verificación Z+X -->
-          <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Tabla de verificación — Unión Z+X</div><div class="section-divider-line"></div></div>
+          <style>
+            /* Estilo para el switch */
+            .switch {
+              position: relative;
+              display: inline-block;
+              width: 60px;
+              height: 30px;
+            }
+            .switch input { opacity: 0; width: 0; height: 0; }
+            .slider {
+              position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+              background-color: #ccc; transition: .4s; border-radius: 30px;
+            }
+            .slider:before {
+              position: absolute; content: "No"; height: 22px; width: 22px; left: 4px; bottom: 4px;
+              background-color: white; transition: .4s; border-radius: 50%;
+              display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;
+            }
+            input:checked + .slider { background-color: #4CAF50; }
+            input:checked + .slider:before { transform: translateX(30px); content: "Sí"; }
+          </style>
+          
+          <div class="section-divider">
+            <div class="section-divider-line"></div>
+            <div class="section-divider-label">Tabla de verificación — Unión Z+X</div>
+            <div class="section-divider-line"></div>
+          </div>
+          
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Verificación</th><th>Resultado</th><th>¿Cumple?</th><th>Observaciones</th></tr></thead>
+              <thead>
+                <tr>
+                  <th>Verificación</th>
+                  <th>Estado</th>
+                  <th>Observaciones</th>
+                </tr>
+              </thead>
               <tbody>
-                <tr><td>Movimiento suave del carro Z sobre guías X</td><td><input class="table-input" type="text" placeholder="OK / No OK"/></td><td><input class="table-input" type="text" placeholder="Sí / No" style="max-width:70px"/></td><td><input class="table-input" type="text" placeholder="Notas..."/></td></tr>
-                <tr><td>Perpendicularidad Z respecto a X (escuadra)</td><td><input class="table-input" type="text" placeholder="OK / No OK"/></td><td><input class="table-input" type="text" placeholder="Sí / No" style="max-width:70px"/></td><td><input class="table-input" type="text" placeholder="Notas..."/></td></tr>
-                <tr><td>Acople motor Z sin excentricidad</td><td><input class="table-input" type="text" placeholder="OK / No OK"/></td><td><input class="table-input" type="text" placeholder="Sí / No" style="max-width:70px"/></td><td><input class="table-input" type="text" placeholder="Notas..."/></td></tr>
-                <tr><td>Tornillos de fijación apretados (todos)</td><td><input class="table-input" type="text" placeholder="OK / No OK"/></td><td><input class="table-input" type="text" placeholder="Sí / No" style="max-width:70px"/></td><td><input class="table-input" type="text" placeholder="Notas..."/></td></tr>
+                <tr>
+                  <td>Movimiento suave del carro Z sobre guías X</td>
+                  <td>
+                    <label class="switch">
+                      <input type="checkbox">
+                      <span class="slider"></span>
+                    </label>
+                  </td>
+                  <td><input class="table-input" type="text" placeholder="Notas..."/></td>
+                </tr>
+                <tr>
+                  <td>Perpendicularidad Z respecto a X (escuadra)</td>
+                  <td>
+                    <label class="switch">
+                      <input type="checkbox">
+                      <span class="slider"></span>
+                    </label>
+                  </td>
+                  <td><input class="table-input" type="text" placeholder="Notas..."/></td>
+                </tr>
+                <tr>
+                  <td>Acople motor Z sin excentricidad</td>
+                  <td>
+                    <label class="switch">
+                      <input type="checkbox">
+                      <span class="slider"></span>
+                    </label>
+                  </td>
+                  <td><input class="table-input" type="text" placeholder="Notas..."/></td>
+                </tr>
+                <tr>
+                  <td>Tornillos de fijación apretados (todos)</td>
+                  <td>
+                    <label class="switch">
+                      <input type="checkbox">
+                      <span class="slider"></span>
+                    </label>
+                  </td>
+                  <td><input class="table-input" type="text" placeholder="Notas..."/></td>
+                </tr>
               </tbody>
             </table>
           </div>
-
           <div class="alert alert-source mt-12">
             <span class="alert-icon">📹</span>
             <div class="alert-text"><strong>Video 3 (11:50-16:30):</strong> Ajuste de rodamientos del carro Z en la Longmill — mismo principio de apriete progresivo aplicable a la 3018 PRO B2.</div>
