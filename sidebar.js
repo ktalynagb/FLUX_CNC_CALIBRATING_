@@ -6,9 +6,9 @@
   const html = `
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-      <div class="logo-mark">⚙ Manual de Calibración</div>
-      <h1>CNC 3018 PRO B2</h1>
-      <p>Protocolo oficial · v1.0</p>
+      <img src="flux-logo.svg" alt="FLUX Solutions" class="sidebar-flux-logo"/>
+      <p class="sidebar-tagline">Manual de Calibración · CNC 3018 PRO B2</p>
+      <p class="sidebar-version">Protocolo oficial · v1.0</p>
     </div>
 
     <nav class="sidebar-nav">
