@@ -193,6 +193,85 @@
 
       <div class="accordion">
         <div class="accordion-header">
+          <span class="accordion-phase-num">3.2</span>
+          <div><div style="font-weight:700;color:var(--text)">Montaje del pórtico X-Z sobre la base Y</div>
+          <div class="text-xs text-muted mt-8">El pórtico completo (X+Z) se instala sobre las guías del eje Y</div></div>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+          <h4>¿Qué es la base Y?</h4>
+          <p>El eje Y es la estructura base que mueve la mesa de trabajo (cama) hacia adelante y atrás. El pórtico X-Z se instala sobre los soportes laterales del eje Y.</p>
+
+          <ol class="step-list">
+            <li class="step-item"><span class="step-num">1</span><div class="step-content"><strong>Posicionar el pórtico X-Z:</strong> Colocar el conjunto sobre los soportes laterales del eje Y. Deben encajar en las ranuras o tornillos de fijación correspondientes.</div></li>
+            <li class="step-item"><span class="step-num">2</span><div class="step-content"><strong>Nivelación previa:</strong> Antes de apretar, verificar visualmente que el pórtico esté a la misma altura en ambos lados (izquierdo y derecho). Una diferencia visible de altura indica que el montaje es incorrecto.</div></li>
+            <li class="step-item"><span class="step-num">3</span><div class="step-content"><strong>Apriete simétrico:</strong> Apretar los tornillos de fijación del pórtico de manera alternada (izquierdo-derecho) y progresiva hasta alcanzar el par final.</div></li>
+            <li class="step-item"><span class="step-num">4</span><div class="step-content"><strong>Verificación de escuadra Y-Z:</strong> Colocar la escuadra entre la guía Y y el carro Z. Verificar perpendicularidad con linterna.</div></li>
+            <li class="step-item"><span class="step-num">5</span><div class="step-content"><strong>Conectar motor Y:</strong> Verificar acople motor-husillo Y. El husillo debe girar sin excentricidad visible.</div></li>
+            <li class="step-item"><span class="step-num">6</span><div class="step-content"><strong>Prueba de movimiento Y con carga:</strong> Enviar <code class="font-mono">G91 G0 Y100 Y-100</code>. El pórtico no debe oscilar lateralmente durante el movimiento.</div></li>
+            <li class="step-item"><span class="step-num">7</span><div class="step-content"><strong>Prueba combinada X-Y:</strong> Enviar movimientos diagonales <code class="font-mono">G91 G0 X50 Y50</code>. Verificar que no hay interferencias mecánicas ni sonidos anómalos.</div></li>
+          </ol>
+
+          <div class="alert alert-info mt-12">
+            <span class="alert-icon">💡</span>
+            <div class="alert-text"><strong>Verificación de diagonales (Video 2 — 2:32-7:00):</strong> Para verificar que el pórtico es perpendicular al eje Y, se puede cortar 4 orificios en las esquinas de un rectángulo y medir que las diagonales sean iguales. Una diferencia en diagonales indica que el pórtico está torcido.</div>
+          </div>
+
+          <div class="video-ref">
+            <div class="video-thumb">▶</div>
+            <div class="video-info"><div class="video-title">Video 2 — Avid CNC: Escuadra del pórtico</div><div class="video-timestamp">2:32 → 7:00 · Verificación de perpendicularidad del pórtico con corte de 4 orificios y medición de diagonales</div></div>
+            <a href="https://www.youtube.com/watch?v=2n8KcTBNS4U&t=152" target="_blank" class="btn btn-ghost btn-sm video-btn">▶ Ver</a>
+          </div>
+
+          <!-- Tabla verificación X-Z+Y -->
+          <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Tabla de verificación — Diagonal del pórtico</div><div class="section-divider-line"></div></div>
+          <div class="table-wrap">
+            <table id="tableDiag">
+              <thead><tr><th>Medición</th><th>Diagonal A (mm)</th><th>Diagonal B (mm)</th><th>Diferencia (mm)</th><th>Estado</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>Corte de prueba</td>
+                  <td><input class="table-input" id="diagA" type="number" step="0.01" placeholder="—"/></td>
+                  <td><input class="table-input" id="diagB" type="number" step="0.01" placeholder="—"/></td>
+                  <td id="diagDiff" class="table-calc">—</td>
+                  <td id="diagStatus">—</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-xs text-muted mt-8">Criterio: Diferencia entre diagonales ≤ 0.5 mm = Aprobado · 0.5-1 mm = Aceptable · > 1 mm = Requiere ajuste</p>
+
+          <div class="table-wrap mt-16">
+            <table>
+              <thead><tr><th>Verificación</th><th>Resultado</th><th>¿Cumple?</th><th>Observaciones</th></tr></thead>
+              <tbody>
+                <tr><td>Altura del pórtico igual en ambos lados</td><td><input class="table-input" type="text" placeholder="OK / No OK"/></td><td><input class="table-input" type="text" placeholder="Sí / No" style="max-width:70px"/></td><td><input class="table-input" type="text" placeholder="Notas..."/></td></tr>
+                <tr><td>Movimiento Y suave con pórtico montado</td><td><input class="table-input" type="text" placeholder="OK / No OK"/></td><td><input class="table-input" type="text" placeholder="Sí / No" style="max-width:70px"/></td><td><input class="table-input" type="text" placeholder="Notas..."/></td></tr>
+                <tr><td>Movimiento X suave sobre pórtico</td><td><input class="table-input" type="text" placeholder="OK / No OK"/></td><td><input class="table-input" type="text" placeholder="Sí / No" style="max-width:70px"/></td><td><input class="table-input" type="text" placeholder="Notas..."/></td></tr>
+                <tr><td>Diagonales iguales (diferencia ≤ 0.5 mm)</td><td><input class="table-input" type="text" placeholder="Diferencia =..."/></td><td><input class="table-input" type="text" placeholder="Sí / No" style="max-width:70px"/></td><td><input class="table-input" type="text" placeholder="Notas..."/></td></tr>
+                <tr><td>Sin ruidos anómalos en prueba combinada X-Y</td><td><input class="table-input" type="text" placeholder="OK / No OK"/></td><td><input class="table-input" type="text" placeholder="Sí / No" style="max-width:70px"/></td><td><input class="table-input" type="text" placeholder="Notas..."/></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- PRUEBAS MANUALES (post-ensamblaje, sin software)      -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="section-divider" style="margin-top:24px">
+        <div class="section-divider-line"></div>
+        <div class="section-divider-label">Pruebas manuales — máquina ensamblada</div>
+        <div class="section-divider-line"></div>
+      </div>
+      <div class="alert alert-info" style="margin-bottom:16px">
+        <span class="alert-icon">📏</span>
+        <div class="alert-text"><strong>Sin software:</strong> Estas pruebas se hacen con calibrador Vernier y comparador. La CNC no necesita estar conectada al computador todavía.</div>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-header open">
           <span class="accordion-phase-num">3.1b</span>
           <div><div style="font-weight:700;color:var(--text)">Verificación de desplazamiento eje Z (post-ensamblaje)</div>
           <div class="text-xs text-muted mt-8">Confirmar que el Z se mueve la distancia correcta</div></div>
@@ -252,7 +331,73 @@
       </div>
 
       <div class="accordion">
-        <div class="accordion-header">
+        <div class="accordion-header open">
+          <span class="accordion-phase-num">3.2b</span>
+          <div><div style="font-weight:700;color:var(--text)">Verificación de desplazamiento eje Y (post-ensamblaje)</div>
+          <div class="text-xs text-muted mt-8">Medir distancia real vs. distancia pedida</div></div>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="alert alert-source mb-12">
+            <span class="alert-icon">📹</span>
+            <div class="alert-text"><strong>Video 1 (15:00-17:26):</strong> Mismo método que eje X. Marcar con cinta, mover distancia conocida, medir con calibre. Siempre eliminar backlash moviendo el eje antes de la medición inicial (ver 08:14).</div>
+          </div>
+
+          <ol class="step-list">
+            <li class="step-item"><span class="step-num">1</span><div class="step-content">Pegar cinta de carrocero en la base de la CNC, bajo un punto de referencia del carro Y.</div></li>
+            <li class="step-item"><span class="step-num">2</span><div class="step-content"><strong>Eliminar backlash:</strong> Mover el eje Y en la dirección a medir 5-10 mm antes de empezar.</div></li>
+            <li class="step-item"><span class="step-num">3</span><div class="step-content">Marcar la posición inicial en la cinta. Enviar comando <code class="font-mono">G91 G0 Y100</code> para mover 100 mm.</div></li>
+            <li class="step-item"><span class="step-num">4</span><div class="step-content">Medir con calibre la distancia real entre la marca inicial y la posición final. Registrar en tabla.</div></li>
+          </ol>
+
+          <div class="video-ref">
+            <div class="video-thumb">▶</div>
+            <div class="video-info"><div class="video-title">Video 1 — Calibración eje Y</div><div class="video-timestamp">15:00 → 17:26 · Método cinta de carrocero y calibre</div></div>
+            <a href="https://www.youtube.com/watch?v=nGwUf8uNWBU&t=900" target="_blank" class="btn btn-ghost btn-sm video-btn">▶ Ver</a>
+          </div>
+
+          <div class="table-wrap mt-12">
+            <table id="tableY">
+              <thead><tr><th>#</th><th>Distancia pedida (mm)</th><th>Distancia medida (mm)</th><th>Error (mm)</th><th>Estado</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td data-col="target">100</td><td><input class="table-input" data-col="measured" data-row="y1" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr><td>2</td><td data-col="target">100</td><td><input class="table-input" data-col="measured" data-row="y2" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr><td>3</td><td data-col="target">100</td><td><input class="table-input" data-col="measured" data-row="y3" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr><td>4</td><td data-col="target">50</td><td><input class="table-input" data-col="measured" data-row="y4" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+                <tr><td>5</td><td data-col="target">50</td><td><input class="table-input" data-col="measured" data-row="y5" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="stats-box" id="tableY_summary">
+            <div class="stats-row">
+              <div class="stat-item"><div class="stat-label">Error prom.</div><div class="stat-value" style="font-size:16px" data-stat="avg">—</div></div>
+              <div class="stat-item"><div class="stat-label">Error máx.</div><div class="stat-value" style="font-size:16px" data-stat="max">—</div></div>
+              <div class="stat-item"><div class="stat-label">Desv. Est.</div><div class="stat-value" style="font-size:16px" data-stat="std">—</div></div>
+              <div class="stat-item"><div class="stat-label">Veredicto</div><div class="stat-status" data-stat="verdict">—</div></div>
+            </div>
+          </div>
+          <div class="flex gap-8 mt-8">
+            <button class="btn btn-ghost btn-sm" onclick="exportCSV('tableY','medicion_eje_y.csv')">⬇ Exportar CSV</button>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ══════════════════════════════════════════════════════ -->
+      <!-- PRUEBAS CON SOFTWARE (requieren UGS conectado)        -->
+      <!-- ══════════════════════════════════════════════════════ -->
+      <div class="section-divider" style="margin-top:24px">
+        <div class="section-divider-line"></div>
+        <div class="section-divider-label">Pruebas con software — conectar UGS</div>
+        <div class="section-divider-line"></div>
+      </div>
+      <div class="alert alert-warning" style="margin-bottom:16px">
+        <span class="alert-icon">💻</span>
+        <div class="alert-text"><strong>Requiere UGS conectado:</strong> Conecta la CNC al computador antes de continuar. Ver <a href="fase7.html#acc71b"><strong>Fase 7 — sección 7.1b</strong></a> para instrucciones de descarga y configuración de UGS.</div>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-header open">
           <span class="accordion-phase-num">3.1c</span>
           <div><div style="font-weight:700;color:var(--text)">Prueba de repetibilidad eje Z</div>
           <div class="text-xs text-muted mt-8">¿La máquina vuelve siempre al mismo punto?</div></div>
@@ -329,124 +474,7 @@
       </div>
 
       <div class="accordion">
-        <div class="accordion-header">
-          <span class="accordion-phase-num">3.2</span>
-          <div><div style="font-weight:700;color:var(--text)">Montaje del pórtico X-Z sobre la base Y</div>
-          <div class="text-xs text-muted mt-8">El pórtico completo (X+Z) se instala sobre las guías del eje Y</div></div>
-          <span class="accordion-chevron">▼</span>
-        </div>
-        <div class="accordion-body">
-          <h4>¿Qué es la base Y?</h4>
-          <p>El eje Y es la estructura base que mueve la mesa de trabajo (cama) hacia adelante y atrás. El pórtico X-Z se instala sobre los soportes laterales del eje Y.</p>
-
-          <ol class="step-list">
-            <li class="step-item"><span class="step-num">1</span><div class="step-content"><strong>Posicionar el pórtico X-Z:</strong> Colocar el conjunto sobre los soportes laterales del eje Y. Deben encajar en las ranuras o tornillos de fijación correspondientes.</div></li>
-            <li class="step-item"><span class="step-num">2</span><div class="step-content"><strong>Nivelación previa:</strong> Antes de apretar, verificar visualmente que el pórtico esté a la misma altura en ambos lados (izquierdo y derecho). Una diferencia visible de altura indica que el montaje es incorrecto.</div></li>
-            <li class="step-item"><span class="step-num">3</span><div class="step-content"><strong>Apriete simétrico:</strong> Apretar los tornillos de fijación del pórtico de manera alternada (izquierdo-derecho) y progresiva hasta alcanzar el par final.</div></li>
-            <li class="step-item"><span class="step-num">4</span><div class="step-content"><strong>Verificación de escuadra Y-Z:</strong> Colocar la escuadra entre la guía Y y el carro Z. Verificar perpendicularidad con linterna.</div></li>
-            <li class="step-item"><span class="step-num">5</span><div class="step-content"><strong>Conectar motor Y:</strong> Verificar acople motor-husillo Y. El husillo debe girar sin excentricidad visible.</div></li>
-            <li class="step-item"><span class="step-num">6</span><div class="step-content"><strong>Prueba de movimiento Y con carga:</strong> Enviar <code class="font-mono">G91 G0 Y100 Y-100</code>. El pórtico no debe oscilar lateralmente durante el movimiento.</div></li>
-            <li class="step-item"><span class="step-num">7</span><div class="step-content"><strong>Prueba combinada X-Y:</strong> Enviar movimientos diagonales <code class="font-mono">G91 G0 X50 Y50</code>. Verificar que no hay interferencias mecánicas ni sonidos anómalos.</div></li>
-          </ol>
-
-          <div class="alert alert-info mt-12">
-            <span class="alert-icon">💡</span>
-            <div class="alert-text"><strong>Verificación de diagonales (Video 2 — 2:32-7:00):</strong> Para verificar que el pórtico es perpendicular al eje Y, se puede cortar 4 orificios en las esquinas de un rectángulo y medir que las diagonales sean iguales. Una diferencia en diagonales indica que el pórtico está torcido.</div>
-          </div>
-
-          <div class="video-ref">
-            <div class="video-thumb">▶</div>
-            <div class="video-info"><div class="video-title">Video 2 — Avid CNC: Escuadra del pórtico</div><div class="video-timestamp">2:32 → 7:00 · Verificación de perpendicularidad del pórtico con corte de 4 orificios y medición de diagonales</div></div>
-            <a href="https://www.youtube.com/watch?v=2n8KcTBNS4U&t=152" target="_blank" class="btn btn-ghost btn-sm video-btn">▶ Ver</a>
-          </div>
-
-          <!-- Tabla verificación X-Z+Y -->
-          <div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-label">Tabla de verificación — Diagonal del pórtico</div><div class="section-divider-line"></div></div>
-          <div class="table-wrap">
-            <table id="tableDiag">
-              <thead><tr><th>Medición</th><th>Diagonal A (mm)</th><th>Diagonal B (mm)</th><th>Diferencia (mm)</th><th>Estado</th></tr></thead>
-              <tbody>
-                <tr>
-                  <td>Corte de prueba</td>
-                  <td><input class="table-input" id="diagA" type="number" step="0.01" placeholder="—"/></td>
-                  <td><input class="table-input" id="diagB" type="number" step="0.01" placeholder="—"/></td>
-                  <td id="diagDiff" class="table-calc">—</td>
-                  <td id="diagStatus">—</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <p class="text-xs text-muted mt-8">Criterio: Diferencia entre diagonales ≤ 0.5 mm = Aprobado · 0.5-1 mm = Aceptable · > 1 mm = Requiere ajuste</p>
-
-          <div class="table-wrap mt-16">
-            <table>
-              <thead><tr><th>Verificación</th><th>Resultado</th><th>¿Cumple?</th><th>Observaciones</th></tr></thead>
-              <tbody>
-                <tr><td>Altura del pórtico igual en ambos lados</td><td><input class="table-input" type="text" placeholder="OK / No OK"/></td><td><input class="table-input" type="text" placeholder="Sí / No" style="max-width:70px"/></td><td><input class="table-input" type="text" placeholder="Notas..."/></td></tr>
-                <tr><td>Movimiento Y suave con pórtico montado</td><td><input class="table-input" type="text" placeholder="OK / No OK"/></td><td><input class="table-input" type="text" placeholder="Sí / No" style="max-width:70px"/></td><td><input class="table-input" type="text" placeholder="Notas..."/></td></tr>
-                <tr><td>Movimiento X suave sobre pórtico</td><td><input class="table-input" type="text" placeholder="OK / No OK"/></td><td><input class="table-input" type="text" placeholder="Sí / No" style="max-width:70px"/></td><td><input class="table-input" type="text" placeholder="Notas..."/></td></tr>
-                <tr><td>Diagonales iguales (diferencia ≤ 0.5 mm)</td><td><input class="table-input" type="text" placeholder="Diferencia =..."/></td><td><input class="table-input" type="text" placeholder="Sí / No" style="max-width:70px"/></td><td><input class="table-input" type="text" placeholder="Notas..."/></td></tr>
-                <tr><td>Sin ruidos anómalos en prueba combinada X-Y</td><td><input class="table-input" type="text" placeholder="OK / No OK"/></td><td><input class="table-input" type="text" placeholder="Sí / No" style="max-width:70px"/></td><td><input class="table-input" type="text" placeholder="Notas..."/></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div class="accordion">
-        <div class="accordion-header">
-          <span class="accordion-phase-num">3.2b</span>
-          <div><div style="font-weight:700;color:var(--text)">Verificación de desplazamiento eje Y (post-ensamblaje)</div>
-          <div class="text-xs text-muted mt-8">Medir distancia real vs. distancia pedida</div></div>
-          <span class="accordion-chevron">▼</span>
-        </div>
-        <div class="accordion-body">
-          <div class="alert alert-source mb-12">
-            <span class="alert-icon">📹</span>
-            <div class="alert-text"><strong>Video 1 (15:00-17:26):</strong> Mismo método que eje X. Marcar con cinta, mover distancia conocida, medir con calibre. Siempre eliminar backlash moviendo el eje antes de la medición inicial (ver 08:14).</div>
-          </div>
-
-          <ol class="step-list">
-            <li class="step-item"><span class="step-num">1</span><div class="step-content">Pegar cinta de carrocero en la base de la CNC, bajo un punto de referencia del carro Y.</div></li>
-            <li class="step-item"><span class="step-num">2</span><div class="step-content"><strong>Eliminar backlash:</strong> Mover el eje Y en la dirección a medir 5-10 mm antes de empezar.</div></li>
-            <li class="step-item"><span class="step-num">3</span><div class="step-content">Marcar la posición inicial en la cinta. Enviar comando <code class="font-mono">G91 G0 Y100</code> para mover 100 mm.</div></li>
-            <li class="step-item"><span class="step-num">4</span><div class="step-content">Medir con calibre la distancia real entre la marca inicial y la posición final. Registrar en tabla.</div></li>
-          </ol>
-
-          <div class="video-ref">
-            <div class="video-thumb">▶</div>
-            <div class="video-info"><div class="video-title">Video 1 — Calibración eje Y</div><div class="video-timestamp">15:00 → 17:26 · Método cinta de carrocero y calibre</div></div>
-            <a href="https://www.youtube.com/watch?v=nGwUf8uNWBU&t=900" target="_blank" class="btn btn-ghost btn-sm video-btn">▶ Ver</a>
-          </div>
-
-          <div class="table-wrap mt-12">
-            <table id="tableY">
-              <thead><tr><th>#</th><th>Distancia pedida (mm)</th><th>Distancia medida (mm)</th><th>Error (mm)</th><th>Estado</th></tr></thead>
-              <tbody>
-                <tr><td>1</td><td data-col="target">100</td><td><input class="table-input" data-col="measured" data-row="y1" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
-                <tr><td>2</td><td data-col="target">100</td><td><input class="table-input" data-col="measured" data-row="y2" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
-                <tr><td>3</td><td data-col="target">100</td><td><input class="table-input" data-col="measured" data-row="y3" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
-                <tr><td>4</td><td data-col="target">50</td><td><input class="table-input" data-col="measured" data-row="y4" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
-                <tr><td>5</td><td data-col="target">50</td><td><input class="table-input" data-col="measured" data-row="y5" type="number" step="0.01" placeholder="—"/></td><td data-col="error">—</td><td data-col="status">—</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="stats-box" id="tableY_summary">
-            <div class="stats-row">
-              <div class="stat-item"><div class="stat-label">Error prom.</div><div class="stat-value" style="font-size:16px" data-stat="avg">—</div></div>
-              <div class="stat-item"><div class="stat-label">Error máx.</div><div class="stat-value" style="font-size:16px" data-stat="max">—</div></div>
-              <div class="stat-item"><div class="stat-label">Desv. Est.</div><div class="stat-value" style="font-size:16px" data-stat="std">—</div></div>
-              <div class="stat-item"><div class="stat-label">Veredicto</div><div class="stat-status" data-stat="verdict">—</div></div>
-            </div>
-          </div>
-          <div class="flex gap-8 mt-8">
-            <button class="btn btn-ghost btn-sm" onclick="exportCSV('tableY','medicion_eje_y.csv')">⬇ Exportar CSV</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="accordion">
-        <div class="accordion-header">
+        <div class="accordion-header open">
           <span class="accordion-phase-num">3.2c</span>
           <div><div style="font-weight:700;color:var(--text)">Prueba de repetibilidad eje Y</div></div>
           <span class="accordion-chevron">▼</span>
@@ -518,19 +546,19 @@
         <ul class="checklist">
           <li class="check-item"><div class="check-box"></div><div><div class="check-label">Subconjunto eje Z verificado y aprobado (Fase 2)</div></div></li>
           <li class="check-item"><div class="check-box"></div><div><div class="check-label">Subconjunto eje Y verificado y aprobado (Fase 2)</div></div></li>
-          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Carro Z montado sobre guías X con apriete progresivo</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Carro Z montado sobre guías X — apriete progresivo</div></div></li>
           <li class="check-item"><div class="check-box"></div><div><div class="check-label">Perpendicularidad Z-X verificada con escuadra y linterna</div></div></li>
           <li class="check-item"><div class="check-box"></div><div><div class="check-label">Motor Z conectado y acople verificado</div></div></li>
           <li class="check-item"><div class="check-box"></div><div><div class="check-label">Pórtico X-Z montado sobre soportes Y a igual altura</div></div></li>
-          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Pórtico perpendicular al eje Y (diagonales ≤ 0.5 mm de diferencia)</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Pórtico perpendicular al eje Y — diagonales ≤ 0.5 mm</div></div></li>
           <li class="check-item"><div class="check-box"></div><div><div class="check-label">Motor Y conectado y acople verificado</div></div></li>
-          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Prueba de movimiento X realizada — sin interferencias</div></div></li>
-          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Prueba de movimiento Y realizada — sin interferencias</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">— Pruebas manuales —</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Desplazamiento eje Z verificado con Vernier (mín. 5 mediciones)</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Desplazamiento eje Y verificado con Vernier (mín. 5 mediciones)</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">— Pruebas con software (UGS) —</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Repetibilidad eje Z verificada con UGS (mín. 10 mediciones)</div></div></li>
+          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Repetibilidad eje Y verificada con UGS (mín. 10 mediciones)</div></div></li>
           <li class="check-item"><div class="check-box"></div><div><div class="check-label">Prueba combinada X-Y realizada — sin ruidos ni oscilaciones</div></div></li>
-          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Desplazamiento eje Z verificado con software (mín. 5 mediciones)</div></div></li>
-          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Repetibilidad eje Z verificada (mín. 10 mediciones)</div></div></li>
-          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Desplazamiento eje Y verificado con software (mín. 5 mediciones)</div></div></li>
-          <li class="check-item"><div class="check-box"></div><div><div class="check-label">Repetibilidad eje Y verificada (mín. 10 mediciones)</div></div></li>
         </ul>
       </div>
 
