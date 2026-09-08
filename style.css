@@ -419,7 +419,7 @@ tr:hover td { background: var(--bg3); }
   color: #fff;
 }
 .check-label { font-size: 13px; color: var(--text2); flex: 1; }
-.check-item.checked .check-label { color: var(--green); text-decoration: line-through; text-decoration-color: rgba(34,197,94,0.4); }
+.check-item.checked .check-label { color: var(--green); text-decoration: line-through; text-decoration-color: rgba(31,193,177,0.4); }
 .check-note { font-size: 11px; color: var(--text3); margin-top: 2px; }
 
 /* ─── STEP LIST ───────────────────────────────────────────── */
